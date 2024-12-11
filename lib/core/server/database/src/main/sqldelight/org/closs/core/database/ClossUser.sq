@@ -1,0 +1,56 @@
+CREATE TABLE IF NOT EXISTS closs_user(
+    id TEXT NOT NULL PRIMARY KEY,
+    username TEXT NOT NULL,
+    password TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'user',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TEXT DEFAULT NULL
+);
+
+findUsers:
+SELECT *
+FROM closs_user;
+
+findUser:
+SELECT *
+FROM closs_user
+WHERE id = :id;
+
+findExistingUser:
+SELECT *
+FROM closs_user
+WHERE id = :id AND
+deleted_at IS NULL;
+
+findUserByUsername:
+SELECT *
+FROM closs_user
+WHERE username = :username AND
+deleted_at IS NULL;
+
+insert:
+INSERT OR REPLACE INTO closs_user(
+    id,
+    username,
+    password
+) VALUES ?
+RETURNING *;
+
+update:
+UPDATE closs_user SET
+    updated_at = CURRENT_TIMESTAMP
+WHERE id = :id
+RETURNING *;
+
+softDelete:
+UPDATE closs_user SET
+    updated_at = CURRENT_TIMESTAMP,
+    deleted_at = CURRENT_TIMESTAMP
+WHERE id = :id
+RETURNING *;
+
+deleteById:
+DELETE FROM closs_user
+WHERE id = :id
+RETURNING *;

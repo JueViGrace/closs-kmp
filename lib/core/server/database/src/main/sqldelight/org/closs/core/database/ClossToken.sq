@@ -1,0 +1,33 @@
+CREATE TABLE IF NOT EXISTS closs_token(
+    token TEXT NOT NULL,
+    user_id TEXT NOT NULL PRIMARY KEY,
+    FOREIGN KEY (user_id) REFERENCES closs_user(id)
+);
+
+findTokenById:
+SELECT *
+FROM closs_token
+WHERE user_id = :id;
+
+findByToken:
+SELECT *
+FROM closs_token
+WHERE token = :token;
+
+insert:
+INSERT OR REPLACE INTO closs_token(
+    token,
+    user_id
+)
+VALUES ?
+RETURNING *;
+
+update:
+UPDATE closs_token SET
+    token = :token
+WHERE user_id = :id
+RETURNING *;
+
+delete:
+DELETE FROM closs_token
+WHERE user_id = :id;

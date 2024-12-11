@@ -1,0 +1,26 @@
+CREATE TABLE IF NOT EXISTS closs_user(
+    id TEXT NOT NULL PRIMARY KEY,
+    username TEXT NOT NULL,
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+findUsers:
+SELECT *
+FROM closs_user;
+
+findUser:
+SELECT *
+FROM closs_user
+WHERE id = :id;
+
+insert:
+INSERT OR REPLACE INTO closs_user(
+    id,
+    username,
+    created_at
+) VALUES ?
+RETURNING *;
+
+delete:
+DELETE FROM closs_user
+WHERE id = :id;
