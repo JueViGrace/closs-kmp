@@ -54,7 +54,7 @@ class SignInViewModel(
         resetState()
         viewModelScope.launch {
             navigator.navigate(
-                destination = Destination.SignUp,
+                destination = Destination.Accounts,
                 navOptions = NavOptions.Builder().apply {
                     setPopUpTo(route = Destination.SignIn, inclusive = false)
                     setLaunchSingleTop(true)

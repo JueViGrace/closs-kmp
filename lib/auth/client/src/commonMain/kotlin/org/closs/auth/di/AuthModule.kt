@@ -2,6 +2,7 @@ package org.closs.auth.di
 
 import org.closs.auth.data.repository.AuthRepository
 import org.closs.auth.data.repository.DefaultAuthRepository
+import org.closs.auth.presentation.viewmodel.AccountsListViewModel
 import org.closs.auth.presentation.viewmodel.ForgotPasswordViewModel
 import org.closs.auth.presentation.viewmodel.SignInViewModel
 import org.koin.core.module.Module
@@ -16,4 +17,6 @@ fun authModule(): Module = module {
     viewModelOf(::SignInViewModel)
 
     viewModelOf(::ForgotPasswordViewModel)
+
+    viewModelOf(::AccountsListViewModel)
 }

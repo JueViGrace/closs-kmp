@@ -1,11 +1,11 @@
 package org.closs.server.config
 
-import org.closs.core.api.validation.serverAuthValidation
-import org.closs.core.database.helper.DbHelper
-import org.closs.core.util.Jwt
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
+import org.closs.core.api.validation.serverAuthValidation
+import org.closs.core.database.helper.DbHelper
+import org.closs.core.util.Jwt
 import org.koin.core.parameter.parametersOf
 import org.koin.ktor.ext.inject
 

@@ -1,0 +1,26 @@
+CREATE TABLE IF NOT EXISTS closs_subsector(
+    codigo TEXT NOT NULL DEFAULT '',
+    subcodigo TEXT NOT NULL UNIQUE,
+    subsector TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TEXT DEFAULT NULL,
+    PRIMARY KEY (codigo, subcodigo),
+    FOREIGN KEY (codigo) REFERENCES closs_sector(codigo)
+);
+
+insert:
+INSERT OR REPLACE INTO closs_subsector(
+    codigo,
+    subcodigo,
+    subsector
+)
+VALUES ?
+RETURNING *;
+
+update:
+UPDATE closs_subsector SET
+    subsector = :subsector,
+    updated_at = CURRENT_TIMESTAMP
+WHERE codigo = :codigo AND subcodigo = :subcodigo
+RETURNING *;

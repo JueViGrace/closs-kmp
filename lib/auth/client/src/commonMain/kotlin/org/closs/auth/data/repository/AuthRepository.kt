@@ -2,6 +2,9 @@ package org.closs.auth.data.repository
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import org.closs.core.api.KtorClient
 import org.closs.core.database.helper.DbHelper
 import org.closs.core.resources.resources.generated.resources.Res
@@ -13,6 +16,7 @@ import org.closs.core.shared.types.auth.ForgotPasswordDto
 import org.closs.core.shared.types.auth.SignInDto
 import org.closs.core.types.Repository
 import org.closs.core.types.auth.Session
+import org.closs.core.types.auth.dbAccountsToDomain
 import org.closs.core.types.auth.dtoToDomain
 import org.closs.core.types.auth.sessionToDb
 import org.closs.core.types.response.display
@@ -24,6 +28,8 @@ import kotlin.coroutines.CoroutineContext
 interface AuthRepository : Repository {
     suspend fun signIn(signInDto: SignInDto): RequestState<DataCodes>
     suspend fun forgotPassword(forgotPasswordDto: ForgotPasswordDto): RequestState<DataCodes>
+    fun getAccounts(): Flow<RequestState<List<Session>>>
+    suspend fun startSession(id: String)
 }
 
 class DefaultAuthRepository(
@@ -99,6 +105,48 @@ class DefaultAuthRepository(
                 )
             }
         )
+    }
+
+    override fun getAccounts(): Flow<RequestState<List<Session>>> {
+        return flow {
+            emit(RequestState.Loading)
+            dbHelper.withDatabase { db ->
+                executeListAsFlow(
+                    query = db.clossSessionQueries.findAccounts()
+                )
+            }.collect { list ->
+                if (list.isEmpty()) {
+                    return@collect emit(
+                        RequestState.Error(
+                            error = DataCodes.NullError(
+                                desc = "No accounts found"
+                            )
+                        )
+                    )
+                }
+
+                emit(
+                    RequestState.Success(
+                        data = list.map { session ->
+                            session.dbAccountsToDomain()
+                        }
+                    )
+                )
+            }
+        }.flowOn(coroutineContext)
+    }
+
+    override suspend fun startSession(id: String) {
+        scope.async {
+            dbHelper.withDatabase { db ->
+                db.transaction {
+                    db.clossSessionQueries.endSessions(id)
+                    db.clossSessionQueries.startSession(
+                        id = id
+                    )
+                }
+            }
+        }.await()
     }
 
     private suspend fun saveSession(session: Session) {

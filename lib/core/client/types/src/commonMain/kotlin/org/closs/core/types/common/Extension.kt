@@ -3,9 +3,11 @@ package org.closs.core.types.common
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.intl.Locale
-import org.closs.core.types.state.DataCodes
-import org.closs.core.types.state.RequestState
-import kotlinx.coroutines.flow.Flow
+import org.closs.core.resources.resources.generated.resources.Res
+import org.closs.core.resources.resources.generated.resources.ic_avlogo
+import org.closs.core.resources.resources.generated.resources.ic_wokin_logo
+import org.closs.core.shared.types.Companies
+import org.jetbrains.compose.resources.DrawableResource
 
 @Composable
 fun String.capitalizeString(): String {
@@ -18,16 +20,10 @@ fun String.capitalizeString(): String {
         )
 }
 
-suspend inline fun <reified T> Flow<RequestState<T>>.unwrapResult(
-    crossinline onSuccess: (T) -> Unit,
-    crossinline onError: (DataCodes) -> Unit,
-    crossinline onLoading: () -> Unit
-) {
-    collect { value ->
-        when (value) {
-            is RequestState.Error -> onError(value.error)
-            is RequestState.Success -> onSuccess(value.data)
-            else -> onLoading()
-        }
+fun selectCompanyImage(company: String): DrawableResource {
+    return when (company) {
+        Companies.CLO.code -> Res.drawable.ic_avlogo
+        Companies.WOKIN.code -> Res.drawable.ic_wokin_logo
+        else -> Res.drawable.ic_avlogo
     }
 }

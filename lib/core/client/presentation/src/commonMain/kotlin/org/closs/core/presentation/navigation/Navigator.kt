@@ -11,13 +11,13 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 
 interface Navigator {
-    val startDestination: org.closs.core.presentation.navigation.Destination
+    val startDestination: Destination
     val navigationActions: Flow<NavigationAction>
     val stack: StateFlow<NavigationStack>
     val stateHandle: SavedStateHandle
 
     suspend fun navigate(
-        destination: org.closs.core.presentation.navigation.Destination,
+        destination: Destination,
         navOptions: NavOptions? = null
     )
 
@@ -25,7 +25,7 @@ interface Navigator {
 }
 
 class DefaultNavigator(
-    override val startDestination: org.closs.core.presentation.navigation.Destination,
+    override val startDestination: Destination,
     override val stateHandle: SavedStateHandle
 ) : Navigator {
     private val _navigationActions = Channel<NavigationAction>()
@@ -35,12 +35,12 @@ class DefaultNavigator(
     override val stack: StateFlow<NavigationStack> = _stack.asStateFlow()
 
     override suspend fun navigate(
-        destination: org.closs.core.presentation.navigation.Destination,
+        destination: Destination,
         navOptions: NavOptions?
     ) {
         _stack.update { stack ->
             if (navOptions?.isPopUpToInclusive() == true) {
-                stack.destinations.remove(navOptions.popUpToRouteObject as org.closs.core.presentation.navigation.Destination)
+                stack.destinations.remove(navOptions.popUpToRouteObject as Destination)
             }
 
             if (stack.destinations.contains(destination)) {
@@ -70,6 +70,6 @@ class DefaultNavigator(
 }
 
 data class NavigationStack(
-    val destinations: MutableList<org.closs.core.presentation.navigation.Destination> = mutableListOf(),
-    val currentDestination: org.closs.core.presentation.navigation.Destination? = null,
+    val destinations: MutableList<Destination> = mutableListOf(),
+    val currentDestination: Destination? = null,
 )

@@ -58,7 +58,7 @@ actual fun AppScaffold(
                 org.closs.core.presentation.navigation.Destination.Profile -> {}
                 org.closs.core.presentation.navigation.Destination.Settings -> {}
                 org.closs.core.presentation.navigation.Destination.SignIn -> {}
-                org.closs.core.presentation.navigation.Destination.SignUp -> {}
+                org.closs.core.presentation.navigation.Destination.Accounts -> {}
                 org.closs.core.presentation.navigation.Destination.Splash -> {}
                 is org.closs.core.presentation.navigation.Destination.UserDetails -> {}
                 org.closs.core.presentation.navigation.Destination.Users -> {}

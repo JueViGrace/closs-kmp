@@ -8,15 +8,18 @@ import kotlinx.coroutines.flow.flowOn
 import org.closs.core.api.KtorClient
 import org.closs.core.database.helper.DbHelper
 import org.closs.core.resources.resources.generated.resources.Res
+import org.closs.core.resources.resources.generated.resources.auth_no_data
 import org.closs.core.resources.resources.generated.resources.session_expired
 import org.closs.core.resources.resources.generated.resources.unexpected_error
 import org.closs.core.resources.resources.generated.resources.unknown_error
+import org.closs.core.resources.resources.generated.resources.welcome
 import org.closs.core.shared.types.auth.AuthDto
 import org.closs.core.shared.types.auth.RefreshTokenDto
 import org.closs.core.types.Repository
 import org.closs.core.types.auth.Session
+import org.closs.core.types.auth.dbAccountsToDomain
+import org.closs.core.types.auth.dbActiveToDomain
 import org.closs.core.types.auth.dtoToDomain
-import org.closs.core.types.auth.findToDomain
 import org.closs.core.types.auth.sessionToDb
 import org.closs.core.types.response.ApiOperation
 import org.closs.core.types.response.display
@@ -27,6 +30,7 @@ import kotlin.coroutines.CoroutineContext
 
 interface AppRepository : Repository {
     fun validateSession(): Flow<RequestState<Session>>
+    fun getAccounts(): Flow<RequestState<List<Session>>>
 }
 
 class DefaultAppRepository(
@@ -80,6 +84,35 @@ class DefaultAppRepository(
         }.flowOn(coroutineContext)
     }
 
+    override fun getAccounts(): Flow<RequestState<List<Session>>> {
+        return flow {
+            emit(RequestState.Loading)
+            dbHelper.withDatabase { db ->
+                executeListAsFlow(
+                    query = db.clossSessionQueries.findAccounts()
+                )
+            }.collect { list ->
+                if (list.isEmpty()) {
+                    return@collect emit(
+                        RequestState.Error(
+                            error = DataCodes.NullError(
+                                msg = Res.string.welcome,
+                            )
+                        )
+                    )
+                }
+
+                emit(
+                    RequestState.Success(
+                        data = list.map { session ->
+                            session.dbAccountsToDomain()
+                        }
+                    )
+                )
+            }
+        }.flowOn(coroutineContext)
+    }
+
     private suspend fun refresh(refreshToken: String): ApiOperation<AuthDto> {
         return ktorClient.call {
             post(
@@ -130,7 +163,7 @@ class DefaultAppRepository(
                 )
             )
 
-        return RequestState.Success(newSession.findToDomain())
+        return RequestState.Success(newSession.dbActiveToDomain())
     }
 
     private suspend fun endSession() {

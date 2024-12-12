@@ -1,9 +1,23 @@
 CREATE TABLE IF NOT EXISTS closs_order(
-    id TEXT NOT NULL PRIMARY KEY,
-    user_id TEXT NOT NULL,
+    kti_ndoc TEXT NOT NULL PRIMARY KEY,
+    kti_tdoc TEXT NOT NULL DEFAULT '',
+    kti_codcli TEXT NOT NULL DEFAULT '',
+    kti_nombrecli TEXT NOT NULL DEFAULT ' ',
+    kti_codven TEXT NOT NULL DEFAULT '',
+    kti_docsol TEXT NOT NULL DEFAULT '',
+    kti_condicion TEXT NOT NULL DEFAULT '',
+    kti_tipprec TEXT NOT NULL DEFAULT '0',
+    kti_totneto TEXT NOT NULL DEFAULT 0.00,
+    kti_status TEXT NOT NULL DEFAULT '0',
+    kti_nroped TEXT NOT NULL DEFAULT '',
+    kti_fchdoc TEXT NOT NULL DEFAULT '1000-01-01 00:00:00',
+    kti_negesp INTEGER NOT NULL DEFAULT 0,
+    ke_pedstatus TEXT NOT NULL DEFAULT '',
+    dolarflete INTEGER NOT NULL DEFAULT 0,
+    complemento INTEGER NOT NULL DEFAULT 0,
+    nro_complemento TEXT NOT NULL DEFAULT '',
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES closs_user(id)
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 findOrders:
@@ -13,36 +27,49 @@ FROM closs_order;
 findOrder:
 SELECT *
 FROM closs_order
-WHERE id = :id;
+WHERE kti_ndoc = :doc;
 
 findOrderWithLines:
 SELECT *
 FROM closs_order
 LEFT JOIN closs_order_lines
-ON closs_order.id = closs_order_lines.order_id
+ON closs_order.kti_ndoc = closs_order_lines.kti_ndoc
 LEFT JOIN closs_product
-ON closs_product.id = closs_order_lines.product_id
-WHERE closs_order.id = :id;
+ON closs_product.codigo = closs_order_lines.kmv_codart
+WHERE closs_order.kti_ndoc = :doc;
 
-findOrdersByUser:
+findOrdersBySalesman:
 SELECT *
 FROM closs_order
-WHERE user_id = :id;
+WHERE kti_codven = :code;
 
-findOrderByUserWithLines:
+findOrderBySalesmanWithLines:
 SELECT *
 FROM closs_order
 LEFT JOIN closs_order_lines
-ON closs_order.id = closs_order_lines.order_id
+ON closs_order.kti_ndoc = closs_order_lines.kti_ndoc
 LEFT JOIN closs_product
-ON closs_product.id = closs_order_lines.product_id
-WHERE closs_order.id = :id AND
-closs_order.user_id = :user_id;
+ON closs_product.codigo = closs_order_lines.kmv_codart
+WHERE closs_order.kti_ndoc = :doc AND
+closs_order.kti_codven = :code;
+
+findOrdersByCustomer:
+SELECT *
+FROM closs_order
+WHERE kti_codcli = :code;
+
+findOrderByCustomerWithLines:
+SELECT *
+FROM closs_order
+LEFT JOIN closs_order_lines
+ON closs_order.kti_ndoc = closs_order_lines.kti_ndoc
+LEFT JOIN closs_product
+ON closs_product.codigo = closs_order_lines.kmv_codart
+WHERE closs_order.kti_ndoc = :doc AND
+closs_order.kti_codcli = :code;
 
 insert:
 INSERT OR REPLACE INTO closs_order(
-    id,
-    user_id
 )
 VALUES ?
 RETURNING *;
@@ -50,5 +77,5 @@ RETURNING *;
 updateStatus:
 UPDATE closs_order SET
     updated_at = CURRENT_TIMESTAMP
-WHERE id = :id
+WHERE kti_ndoc = :doc
 RETURNING *;

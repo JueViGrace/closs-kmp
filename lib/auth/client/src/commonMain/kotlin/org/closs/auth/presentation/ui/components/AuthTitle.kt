@@ -27,7 +27,7 @@ fun AuthTitle(
     ) {
         title()
         ImageComponent(
-            modifier = Modifier.size(100.dp),
+            modifier = Modifier.size(140.dp),
             painter = painterResource(Res.drawable.ic_avlogo),
             contentDescription = stringResource(Res.string.app_logo)
         )

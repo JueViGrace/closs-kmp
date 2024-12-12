@@ -1,21 +1,14 @@
 CREATE TABLE IF NOT EXISTS closs_user(
     id TEXT NOT NULL PRIMARY KEY,
-    username TEXT NOT NULL,
-    password TEXT NOT NULL,
-    role TEXT NOT NULL DEFAULT 'user',
+    username TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL DEFAULT '',
+    role TEXT NOT NULL DEFAULT 'customer',
+    ult_sinc TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    version TEXT NOT NULL DEFAULT '0.0.0',
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted_at TEXT DEFAULT NULL
 );
-
-findUsers:
-SELECT *
-FROM closs_user;
-
-findUser:
-SELECT *
-FROM closs_user
-WHERE id = :id;
 
 findExistingUser:
 SELECT *
@@ -23,7 +16,7 @@ FROM closs_user
 WHERE id = :id AND
 deleted_at IS NULL;
 
-findUserByUsername:
+findExisitngByUsername:
 SELECT *
 FROM closs_user
 WHERE username = :username AND
@@ -37,8 +30,17 @@ INSERT OR REPLACE INTO closs_user(
 ) VALUES ?
 RETURNING *;
 
-update:
+updatePassword:
 UPDATE closs_user SET
+    password = :password,
+    updated_at = CURRENT_TIMESTAMP
+WHERE id = :id
+RETURNING *;
+
+updateLastSync:
+UPDATE closs_user SET
+    ult_sinc = :lastSync,
+    version = :version,
     updated_at = CURRENT_TIMESTAMP
 WHERE id = :id
 RETURNING *;

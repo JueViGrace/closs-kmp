@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS closs_sector(
+    codigo TEXT NOT NULL PRIMARY KEY,
+    zona TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TEXT DEFAULT NULL
+);
+
+insert:
+INSERT OR REPLACE INTO closs_sector(
+    codigo,
+    zona
+)
+VALUES ?
+RETURNING *;
+
+update:
+UPDATE closs_sector SET
+    zona = :zona,
+    updated_at = CURRENT_TIMESTAMP
+WHERE codigo = :codigo
+RETURNING *;

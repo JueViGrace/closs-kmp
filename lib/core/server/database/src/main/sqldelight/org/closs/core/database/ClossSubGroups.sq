@@ -1,0 +1,26 @@
+CREATE TABLE IF NOT EXISTS closs_subgroup(
+    codigo TEXT NOT NULL DEFAULT '',
+    subcodigo TEXT NOT NULL UNIQUE,
+    nombre TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TEXT DEFAULT NULL,
+    PRIMARY KEY (codigo, subcodigo),
+    FOREIGN KEY(codigo) REFERENCES closs_group(codigo)
+);
+
+insert:
+INSERT OR REPLACE INTO closs_subgroup(
+    codigo,
+    subcodigo,
+    nombre
+)
+VALUES ?
+RETURNING *;
+
+update:
+UPDATE closs_subgroup SET
+    nombre = :nombre,
+    updated_at = CURRENT_TIMESTAMP
+WHERE codigo = :codigo AND subcodigo = :subcodigo
+RETURNING *;

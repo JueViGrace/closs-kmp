@@ -19,7 +19,7 @@ fun appModule(): Module = module {
     viewModelOf(::AppViewModel)
 
     includes(
-        org.closs.auth.di.authModule(),
+        authModule(),
         userModule(),
         productModule(),
         orderModule(),

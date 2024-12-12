@@ -1,0 +1,8 @@
+CREATE TABLE IF NOT EXISTS closs_managers(
+    kng_codgcia TEXT NOT NULL DEFAULT '',
+    kng_codcoord TEXT NOT NULL DEFAULT '',
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TEXT DEFAULT NULL,
+    PRIMARY KEY (kng_codgcia, kng_codcoord)
+);

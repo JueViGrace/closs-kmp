@@ -1,0 +1,84 @@
+CREATE TABLE IF NOT EXISTS closs_salesman(
+    codigo TEXT NOT NULL PRIMARY KEY,
+    nombre TEXT NOT NULL DEFAULT '',
+    email TEXT NOT NULL UNIQUE DEFAULT '',
+    telefono TEXT NOT NULL DEFAULT '',
+    telefonos TEXT NOT NULL DEFAULT '',
+    status INTEGER NOT NULL DEFAULT 0,
+    supervpor TEXT NOT NULL DEFAULT '',
+    sector TEXT NOT NULL DEFAULT '',
+    subcodigo TEXT NOT NULL DEFAULT '',
+    nivgcial INTEGER NOT NULL DEFAULT 0,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TEXT DEFAULT NULL
+);
+
+findSalesmen:
+SELECT *
+FROM closs_salesman;
+
+findByManager:
+SELECT *
+FROM closs_salesman
+LEFT JOIN closs_managers
+ON closs_salesman.supervpor = closs_managers.kng_codcoord
+WHERE closs_salesman.supervpor = :manager
+GROUP BY closs_salesman.codigo;
+
+findExistingByManager:
+SELECT *
+FROM closs_salesman
+LEFT JOIN closs_managers
+ON closs_salesman.supervpor = closs_managers.kng_codcoord
+WHERE closs_salesman.supervpor = :manager AND
+      closs_salesman.deleted_at IS NULL
+GROUP BY closs_salesman.codigo;
+
+findSalesmanByCode:
+SELECT *
+FROM closs_salesman
+WHERE codigo = :code;
+
+findExistingSalesmanByCode:
+SELECT *
+FROM closs_salesman
+WHERE codigo = :code AND deleted_at IS NULL;
+
+insert:
+INSERT OR REPLACE INTO closs_salesman(
+    codigo,
+    nombre,
+    telefono,
+    telefonos,
+    status,
+    supervpor,
+    sector,
+    subcodigo,
+    email,
+    nivgcial
+)
+VALUES ?
+RETURNING *;
+
+update:
+UPDATE closs_salesman SET
+    nombre = :nombre,
+    telefono = :telefono,
+    telefonos = :telefonos,
+    supervpor = :supervpor,
+    sector = :sector,
+    subcodigo = :subcodigo,
+    email = :email
+WHERE codigo = :code
+RETURNING *;
+
+softDelete:
+UPDATE closs_salesman SET
+    updated_at = CURRENT_TIMESTAMP,
+    deleted_at = CURRENT_TIMESTAMP
+WHERE codigo = :code;
+
+delete:
+DELETE FROM closs_salesman
+WHERE codigo = :code;

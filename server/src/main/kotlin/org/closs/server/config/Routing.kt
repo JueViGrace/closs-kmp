@@ -1,10 +1,5 @@
 package org.closs.server.config
 
-import org.closs.core.types.APIResponse
-import org.closs.core.types.ServerResponse.badRequest
-import org.closs.core.types.ServerResponse.forbidden
-import org.closs.core.types.ServerResponse.internalServerError
-import org.closs.core.types.ServerResponse.unauthorized
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationCall
@@ -17,6 +12,11 @@ import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.path
 import io.ktor.server.response.respond
 import io.ktor.server.routing.routing
+import org.closs.core.types.APIResponse
+import org.closs.core.types.ServerResponse.badRequest
+import org.closs.core.types.ServerResponse.forbidden
+import org.closs.core.types.ServerResponse.internalServerError
+import org.closs.core.types.ServerResponse.unauthorized
 import org.slf4j.LoggerFactory
 
 fun Application.configureRouting() {
@@ -44,8 +44,12 @@ fun Application.configureRouting() {
             )
         }
 
-        status(HttpStatusCode.Unauthorized) {
-            val id = call.principal<JWTPrincipal>()?.payload?.getClaim("user_claims")?.asMap()["user_id"]
+        status(HttpStatusCode.Unauthorized) { call, code ->
+            val id = call.principal<JWTPrincipal>()
+                ?.payload
+                ?.getClaim("user_claims")
+                ?.asMap()
+                ?.get("user_id") as String?
             if (id != null) {
                 return@status call.respond(
                     status = HttpStatusCode.Forbidden,
@@ -56,16 +60,16 @@ fun Application.configureRouting() {
             }
 
             call.respond(
-                status = HttpStatusCode.Unauthorized,
+                status = code,
                 message = unauthorized(
                     message = "You are not authorized to access this endpoint"
                 ) as APIResponse.Failure
             )
         }
 
-        status(HttpStatusCode.Forbidden) {
+        status(HttpStatusCode.Forbidden) { call, code ->
             call.respond(
-                status = HttpStatusCode.Forbidden,
+                status = code,
                 message = forbidden(
                     message = "You are not allowed to access this resource"
                 ) as APIResponse.Failure
