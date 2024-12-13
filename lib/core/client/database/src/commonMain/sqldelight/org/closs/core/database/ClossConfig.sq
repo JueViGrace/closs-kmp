@@ -11,11 +11,10 @@ CREATE TABLE IF NOT EXISTS closs_config(
     cnfg_etiq TEXT NOT NULL,
     cnfg_ttip TEXT NOT NULL,
     username TEXT NOT NULL DEFAULT '',
-    user_id TEXT NOT NULL,
+    user_id TEXT NOT NULL PRIMARY KEY ,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TEXT DEFAULT NULL,
-    PRIMARY KEY (cnfg_idconfig, user_id),
+    UNIQUE (cnfg_idconfig, user_id),
     FOREIGN KEY (user_id) REFERENCES closs_user(id)
 );
 
@@ -23,11 +22,6 @@ findUserConfigById:
 SELECT *
 FROM closs_config
 WHERE user_id = :id;
-
-findUserConfigByUsername:
-SELECT *
-FROM closs_config
-WHERE username = :username;
 
 insert:
 INSERT OR REPLACE INTO closs_config(
@@ -43,7 +37,13 @@ INSERT OR REPLACE INTO closs_config(
     cnfg_etiq,
     cnfg_ttip,
     username,
-    user_id
+    user_id,
+    created_at,
+    updated_at
 )
 VALUES ?
 RETURNING *;
+
+delete:
+DELETE FROM closs_config
+WHERE user_id = :id;

@@ -5,3 +5,18 @@ CREATE TABLE IF NOT EXISTS closs_group(
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted_at TEXT DEFAULT NULL
 );
+
+insert:
+INSERT OR REPLACE INTO closs_group(
+    codigo,
+    nombre
+)
+VALUES ?
+RETURNING *;
+
+update:
+UPDATE closs_group SET
+    nombre = :nombre,
+    updated_at = CURRENT_TIMESTAMP
+WHERE codigo = :code
+RETURNING *;

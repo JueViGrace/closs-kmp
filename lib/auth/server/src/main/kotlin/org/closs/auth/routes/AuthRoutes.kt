@@ -48,7 +48,6 @@ fun Route.authRoutes() {
             )
         }
 
-        // this should send an email or receive the new password
         post("/forgotPassword") {
             val body = call.receive<ForgotPasswordDto>()
             val response = handler.forgotPassword(body)

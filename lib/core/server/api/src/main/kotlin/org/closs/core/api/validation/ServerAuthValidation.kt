@@ -54,8 +54,8 @@ fun AuthenticationConfig.serverAuthValidation(jwt: Jwt, dbHelper: DbHelper) {
             }
 
             OrderDataValidation(
-                id = order.id,
-                userId = order.user_id
+                id = order.kti_ndoc,
+                userId = order.
             )
         }
     )

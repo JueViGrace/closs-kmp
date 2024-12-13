@@ -1,4 +1,5 @@
 CREATE TABLE IF NOT EXISTS closs_salesman(
+    user_id TEXT NOT NULL DEFAULT '',
     codigo TEXT NOT NULL PRIMARY KEY,
     nombre TEXT NOT NULL DEFAULT '',
     email TEXT NOT NULL UNIQUE DEFAULT '',
@@ -11,42 +12,85 @@ CREATE TABLE IF NOT EXISTS closs_salesman(
     nivgcial INTEGER NOT NULL DEFAULT 0,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted_at TEXT DEFAULT NULL
+    FOREIGN KEY (user_id) REFERENCES closs_user(id)
 );
 
-findSalesmen:
-SELECT *
-FROM closs_salesman;
-
 findByManager:
-SELECT *
+SELECT
+closs_salesman.user_id,
+closs_salesman.codigo,
+closs_user.username,
+closs_salesman.nombre,
+closs_salesman.email,
+closs_salesman.telefono,
+closs_salesman.telefonos,
+closs_salesman.supervpor,
+closs_sector.zona AS sector,
+closs_subsector.subsector AS subsector,
+closs_user.ult_sinc,
+closs_user.version,
+closs_salesman.created_at,
+closs_salesman.updated_at
 FROM closs_salesman
+LEFT JOIN closs_sector
+ON closs_sector.codigo = closs_salesman.sector
+LEFT JOIN closs_subsector
+ON closs_subsector.subcodigo = closs_salesman.subcodigo
+LEFT JOIN closs_user
+ON closs_salesman.user_id = closs_user.id
 LEFT JOIN closs_managers
 ON closs_salesman.supervpor = closs_managers.kng_codcoord
-WHERE closs_salesman.supervpor = :manager
-GROUP BY closs_salesman.codigo;
-
-findExistingByManager:
-SELECT *
-FROM closs_salesman
-LEFT JOIN closs_managers
-ON closs_salesman.supervpor = closs_managers.kng_codcoord
-WHERE closs_salesman.supervpor = :manager AND
-      closs_salesman.deleted_at IS NULL
+WHERE closs_salesman.status = 1 AND
+closs_managers.kng_codgcia = :manager
 GROUP BY closs_salesman.codigo;
 
 findSalesmanByCode:
-SELECT *
+SELECT
+closs_salesman.codigo AS vendedor,
+closs_user.username AS username,
+closs_salesman.nombre,
+closs_salesman.email,
+closs_salesman.telefono,
+closs_salesman.telefonos,
+closs_salesman.supervpor,
+closs_sector.zona AS sector,
+closs_subsector.subsector AS subsector,
+closs_user.ult_sinc,
+closs_user.version
 FROM closs_salesman
-WHERE codigo = :code;
+LEFT JOIN closs_sector
+ON closs_sector.codigo = closs_salesman.sector
+LEFT JOIN closs_subsector
+ON closs_subsector.subcodigo = closs_salesman.subcodigo
+LEFT JOIN closs_user
+ON closs_salesman.user_id = closs_user.id
+WHERE closs_salesman.codigo = :code;
 
 findExistingSalesmanByCode:
-SELECT *
+SELECT
+closs_salesman.codigo AS vendedor,
+closs_user.username AS username,
+closs_salesman.nombre,
+closs_salesman.email,
+closs_salesman.telefono,
+closs_salesman.telefonos,
+closs_salesman.supervpor,
+closs_sector.zona AS sector,
+closs_subsector.subsector AS subsector,
+closs_user.ult_sinc,
+closs_user.version
 FROM closs_salesman
-WHERE codigo = :code AND deleted_at IS NULL;
+LEFT JOIN closs_sector
+ON closs_sector.codigo = closs_salesman.sector
+LEFT JOIN closs_subsector
+ON closs_subsector.subcodigo = closs_salesman.subcodigo
+LEFT JOIN closs_user
+ON closs_salesman.user_id = closs_user.id
+WHERE closs_salesman.codigo = :code AND closs_salesman.status = 1;
 
 insert:
 INSERT OR REPLACE INTO closs_salesman(
+    user_id,
     codigo,
     nombre,
     telefono,
@@ -73,12 +117,9 @@ UPDATE closs_salesman SET
 WHERE codigo = :code
 RETURNING *;
 
-softDelete:
+updateUserId:
 UPDATE closs_salesman SET
-    updated_at = CURRENT_TIMESTAMP,
-    deleted_at = CURRENT_TIMESTAMP
-WHERE codigo = :code;
-
-delete:
-DELETE FROM closs_salesman
-WHERE codigo = :code;
+    user_id = :id,
+    updated_at = CURRENT_TIMESTAMP
+WHERE codigo = :code
+RETURNING *;

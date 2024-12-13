@@ -2,27 +2,23 @@ CREATE TABLE IF NOT EXISTS closs_order(
     kti_ndoc TEXT NOT NULL PRIMARY KEY,
     kti_tdoc TEXT NOT NULL DEFAULT '',
     kti_codcli TEXT NOT NULL DEFAULT '',
-    kti_nombrecli TEXT NOT NULL DEFAULT ' ',
+    kti_nombrecli TEXT NOT NULL DEFAULT '',
     kti_codven TEXT NOT NULL DEFAULT '',
     kti_docsol TEXT NOT NULL DEFAULT '',
     kti_condicion TEXT NOT NULL DEFAULT '',
-    kti_tipprec TEXT NOT NULL DEFAULT '0',
+    kti_tipprec INTEGER NOT NULL DEFAULT 0,
     kti_totneto TEXT NOT NULL DEFAULT 0.00,
-    kti_status TEXT NOT NULL DEFAULT '0',
+    kti_status INTEGER NOT NULL DEFAULT 0,
     kti_nroped TEXT NOT NULL DEFAULT '',
     kti_fchdoc TEXT NOT NULL DEFAULT '1000-01-01 00:00:00',
     kti_negesp INTEGER NOT NULL DEFAULT 0,
-    ke_pedstatus TEXT NOT NULL DEFAULT '',
+    ke_pedstatus INTEGER NOT NULL DEFAULT 0,
     dolarflete INTEGER NOT NULL DEFAULT 0,
     complemento INTEGER NOT NULL DEFAULT 0,
     nro_complemento TEXT NOT NULL DEFAULT '',
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-
-findOrders:
-SELECT *
-FROM closs_order;
 
 findOrder:
 SELECT *
@@ -38,44 +34,101 @@ LEFT JOIN closs_product
 ON closs_product.codigo = closs_order_lines.kmv_codart
 WHERE closs_order.kti_ndoc = :doc;
 
-findOrdersBySalesman:
-SELECT *
+findAllOrdersByManager:
+SELECT closs_order.*
 FROM closs_order
-WHERE kti_codven = :code;
+LEFT JOIN closs_salesman
+ON closs_order.kti_codven = closs_salesman.codigo
+LEFT JOIN closs_managers
+ON closs_salesman.supervpor = closs_managers.kng_codcoord
+WHERE
+    closs_managers.kng_codgcia = :manager
+ORDER BY
+  closs_order.kti_codven ASC, closs_order.kti_fchdoc ASC;
 
-findOrderBySalesmanWithLines:
-SELECT *
+findOrdersByManager:
+SELECT closs_order.*
 FROM closs_order
-LEFT JOIN closs_order_lines
-ON closs_order.kti_ndoc = closs_order_lines.kti_ndoc
-LEFT JOIN closs_product
-ON closs_product.codigo = closs_order_lines.kmv_codart
-WHERE closs_order.kti_ndoc = :doc AND
-closs_order.kti_codven = :code;
+LEFT JOIN closs_salesman
+ON closs_order.kti_codven = closs_salesman.codigo
+LEFT JOIN closs_managers
+ON closs_salesman.supervpor = closs_managers.kng_codcoord
+WHERE
+    closs_managers.kng_codgcia = :manager
+  AND (closs_order.kti_status = 4 OR closs_order.kti_status = 5)
+  AND closs_order.kti_nroped != ''
+  AND MONTH(closs_order.kti_fchdoc) = MONTH(NOW())
+  AND YEAR(kti_fchdoc) = YEAR(NOW())
+ORDER BY
+  closs_order.kti_codven ASC, closs_order.kti_fchdoc ASC;
+
+findAllOrdersBySalesman:
+SELECT closs_order.*
+FROM closs_order
+LEFT JOIN closs_salesman
+ON closs_order.kti_codven = closs_salesman.codigo
+WHERE
+    closs_salesman.codigo = :code
+ORDER BY
+  closs_order.kti_codven ASC, closs_order.kti_fchdoc ASC;
+
+findOrdersBySalesman:
+SELECT closs_order.*
+FROM closs_order
+LEFT JOIN closs_salesman
+ON closs_order.kti_codven = closs_salesman.codigo
+WHERE
+    closs_salesman.codigo = :code
+  AND (closs_order.kti_status = 4 OR closs_order.kti_status = 5)
+  AND closs_order.kti_nroped != ''
+  AND MONTH(closs_order.kti_fchdoc) = MONTH(NOW())
+  AND YEAR(kti_fchdoc) = YEAR(NOW())
+ORDER BY
+  closs_order.kti_codven ASC, closs_order.kti_fchdoc ASC;
+
+findAllOrdersByCustomer:
+SELECT closs_order.*
+FROM closs_order
+LEFT JOIN closs_customer
+ON closs_order.kti_codcli = closs_customer.codigo
+WHERE
+    closs_customer.codigo = :code
+ORDER BY
+  closs_order.kti_codven ASC, closs_order.kti_fchdoc ASC;
 
 findOrdersByCustomer:
-SELECT *
+SELECT closs_order.*
 FROM closs_order
-WHERE kti_codcli = :code;
-
-findOrderByCustomerWithLines:
-SELECT *
-FROM closs_order
-LEFT JOIN closs_order_lines
-ON closs_order.kti_ndoc = closs_order_lines.kti_ndoc
-LEFT JOIN closs_product
-ON closs_product.codigo = closs_order_lines.kmv_codart
-WHERE closs_order.kti_ndoc = :doc AND
-closs_order.kti_codcli = :code;
+LEFT JOIN closs_customer
+ON closs_order.kti_codcli = closs_customer.codigo
+WHERE
+    closs_customer.codigo = :code
+  AND (closs_order.kti_status = 4 OR closs_order.kti_status = 5)
+  AND closs_order.kti_nroped != ''
+  AND MONTH(closs_order.kti_fchdoc) = MONTH(NOW())
+  AND YEAR(kti_fchdoc) = YEAR(NOW())
+ORDER BY
+  closs_order.kti_codven ASC, closs_order.kti_fchdoc ASC;
 
 insert:
 INSERT OR REPLACE INTO closs_order(
+    kti_ndoc,
+    kti_tdoc,
+    kti_codcli,
+    kti_nombrecli,
+    kti_codven,
+    kti_docsol,
+    kti_condicion,
+    kti_tipprec,
+    kti_totneto,
+    kti_status,
+    kti_nroped,
+    kti_fchdoc,
+    kti_negesp,
+    ke_pedstatus,
+    dolarflete,
+    complemento,
+    nro_complemento
 )
 VALUES ?
-RETURNING *;
-
-updateStatus:
-UPDATE closs_order SET
-    updated_at = CURRENT_TIMESTAMP
-WHERE kti_ndoc = :doc
 RETURNING *;

@@ -1,5 +1,6 @@
 CREATE TABLE IF NOT EXISTS closs_customer(
-    codigo TEXT NOT NULL PRIMARY KEY,
+    user_id TEXT NOT NULL PRIMARY KEY,
+    codigo TEXT NOT NULL UNIQUE DEFAULT '',
     nombre TEXT NOT NULL DEFAULT '',
     email TEXT NOT NULL UNIQUE DEFAULT '',
     direccion TEXT NOT NULL DEFAULT '',
@@ -29,36 +30,13 @@ CREATE TABLE IF NOT EXISTS closs_customer(
     dolarflete INTEGER NOT NULL DEFAULT 0,
     nodolarflete INTEGER NOT NULL DEFAULT 0,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES closs_user(id)
 );
-
-findCustomerByCode:
-SELECT *
-FROM closs_customer
-WHERE codigo = :code;
-
-findCustomersByManager:
-SELECT closs_customer.*
-FROM closs_customer
-LEFT JOIN closs_salesman
-ON closs_customer.vendedor = closs_salesman.codigo
-LEFT JOIN closs_managers
-ON closs_salesman.supervpor = closs_managers.kng_codcoord
-WHERE closs_managers.kng_codgcia = :manager
-ORDER BY
-    closs_salesman.supervpor ASC,
-    closs_customer.vendedor ASC,
-    closs_customer.nombre ASC;
-
-findCustomersBySalesman:
-SELECT *
-FROM closs_customer
-WHERE closs_customer.vendedor = :code
-ORDER BY
-    closs_customer.nombre ASC;
 
 insert:
 INSERT OR REPLACE INTO closs_customer(
+    user_id,
     codigo,
     nombre,
     email,
@@ -92,36 +70,6 @@ INSERT OR REPLACE INTO closs_customer(
 VALUES ?
 RETURNING *;
 
-update:
-UPDATE closs_customer SET
-    nombre = :nombre,
-    email = :email,
-    direccion = :direccion,
-    telefonos = :telefonos,
-    perscont = :perscont,
-    vendedor = :vendedor,
-    contribspecial = :contribspecial,
-    status = :status,
-    sector = :sector,
-    subsector = :subsector,
-    precio = :precio,
-    kne_activa = :kne_activa,
-    noemifac = :noemifac,
-    noeminota = :noeminota,
-    fchultvta = :fchultvta,
-    mtoultvta = :mtoultvta,
-    prcdpagdia = :prcdpagdia,
-    promdiasp = :promdiasp,
-    riesgocrd = :riesgocrd,
-    cantdocs = :cantdocs,
-    totmtodocs = :totmtodocs,
-    prommtodoc = :prommtodoc,
-    diasultvta = :diasultvta,
-    promdiasvta = :promdiasvta,
-    limcred = :limcred,
-    fchcrea = :fchcrea,
-    dolarflete = :dolarflete,
-    nodolarflete = :nodolarflete,
-    updated_at = CURRENT_TIMESTAMP
-WHERE codigo = :code
-RETURNING *;
+delete:
+DELETE FROM closs_customer
+WHERE codigo = :code AND user_id = :id;

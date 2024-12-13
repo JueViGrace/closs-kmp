@@ -1,28 +1,26 @@
 CREATE TABLE IF NOT EXISTS closs_order(
-    id TEXT NOT NULL PRIMARY KEY,
-    user_id TEXT NOT NULL,
+    user_id TEXT NOT NULL PRIMARY KEY,
+    kti_ndoc TEXT NOT NULL DEFAULT '',
+    kti_tdoc TEXT NOT NULL DEFAULT '',
+    kti_codcli TEXT NOT NULL DEFAULT '',
+    kti_nombrecli TEXT NOT NULL DEFAULT '',
+    kti_codven TEXT NOT NULL DEFAULT '',
+    kti_docsol TEXT NOT NULL DEFAULT '',
+    kti_condicion TEXT NOT NULL DEFAULT '',
+    kti_tipprec INTEGER NOT NULL DEFAULT 0,
+    kti_totneto TEXT NOT NULL DEFAULT 0.00,
+    kti_status INTEGER NOT NULL DEFAULT 0,
+    kti_nroped TEXT NOT NULL DEFAULT '',
+    kti_fchdoc TEXT NOT NULL DEFAULT '1000-01-01 00:00:00',
+    kti_negesp INTEGER NOT NULL DEFAULT 0,
+    ke_pedstatus INTEGER NOT NULL DEFAULT 0,
+    dolarflete INTEGER NOT NULL DEFAULT 0,
+    complemento INTEGER NOT NULL DEFAULT 0,
+    nro_complemento TEXT NOT NULL DEFAULT '',
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES closs_user(id)
 );
-
-findOrders:
-SELECT *
-FROM closs_order;
-
-findOrder:
-SELECT *
-FROM closs_order
-WHERE id = :id;
-
-findOrderWithLines:
-SELECT *
-FROM closs_order
-LEFT JOIN closs_order_lines
-ON closs_order.id = closs_order_lines.order_id
-LEFT JOIN closs_product
-ON closs_product.id = closs_order_lines.product_id
-WHERE closs_order.id = :id;
 
 findOrdersByUser:
 SELECT *
@@ -33,22 +31,38 @@ findOrderByUserWithLines:
 SELECT *
 FROM closs_order
 LEFT JOIN closs_order_lines
-ON closs_order.id = closs_order_lines.order_id
+ON closs_order.kti_ndoc = closs_order_lines.kti_ndoc
 LEFT JOIN closs_product
-ON closs_product.id = closs_order_lines.product_id
-WHERE closs_order.id = :id AND
+ON closs_order_lines.kmv_codart = closs_product.codigo
+WHERE closs_order.kti_ndoc = :doc AND
 closs_order.user_id = :user_id;
 
 insert:
 INSERT OR REPLACE INTO closs_order(
-    id,
-    user_id
+    user_id,
+    kti_ndoc,
+    kti_tdoc,
+    kti_codcli,
+    kti_nombrecli,
+    kti_codven,
+    kti_docsol,
+    kti_condicion,
+    kti_tipprec,
+    kti_totneto,
+    kti_status,
+    kti_nroped,
+    kti_fchdoc,
+    kti_negesp,
+    ke_pedstatus,
+    dolarflete,
+    complemento,
+    nro_complemento,
+    created_at,
+    updated_at
 )
 VALUES ?
 RETURNING *;
 
-updateStatus:
-UPDATE closs_order SET
-    updated_at = CURRENT_TIMESTAMP
-WHERE id = :id
-RETURNING *;
+delete:
+DELETE FROM closs_order
+WHERE kti_ndoc = :doc AND user_id = :id;

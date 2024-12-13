@@ -1,7 +1,10 @@
 CREATE TABLE IF NOT EXISTS closs_user(
     id TEXT NOT NULL PRIMARY KEY,
-    username TEXT NOT NULL,
-    created_at TEXT DEFAULT CURRENT_TIMESTAMP
+    username TEXT NOT NULL DEFAULT '',
+    ult_sinc TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    version TEXT NOT NULL DEFAULT '0.0.0',
+    created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+    updated_at TEXT DEFAULT CURRENT_TIMESTAMP
 );
 
 findUsers:
@@ -17,7 +20,10 @@ insert:
 INSERT OR REPLACE INTO closs_user(
     id,
     username,
-    created_at
+    ult_sinc,
+    version,
+    created_at,
+    updated_at
 ) VALUES ?
 RETURNING *;
 

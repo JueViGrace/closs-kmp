@@ -39,7 +39,8 @@ CREATE TABLE IF NOT EXISTS closs_product(
 
 findProducts:
 SELECT *
-FROM closs_product;
+FROM closs_product
+ORDER BY codigo ASC;
 
 findProductByCode:
 SELECT *

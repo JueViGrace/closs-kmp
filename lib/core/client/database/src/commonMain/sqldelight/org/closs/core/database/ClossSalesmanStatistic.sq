@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS closs_salesman_statistic(
+    user_id TEXT NOT NULL PRIMARY KEY,
     codcoord TEXT NOT NULL DEFAULT '',
     nomcoord TEXT NOT NULL DEFAULT '',
-    vendedor TEXT NOT NULL PRIMARY KEY,
+    vendedor TEXT NOT NULL DEFAULT '',
     nombrevend TEXT NOT NULL DEFAULT '',
     cntpedidos INTEGER NOT NULL DEFAULT 0,
     mtopedidos REAL NOT NULL DEFAULT 0.00,
@@ -26,23 +27,26 @@ CREATE TABLE IF NOT EXISTS closs_salesman_statistic(
     cntrecl REAL NOT NULL DEFAULT 0.00,
     mtorecl REAL NOT NULL DEFAULT 0.00,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES closs_user(id)
 );
 
-findByManagerCode:
+findStatisticsByUser:
 SELECT *
 FROM closs_salesman_statistic
-LEFT JOIN closs_managers
-ON closs_salesman_statistic.codcoord = closs_managers.kng_codcoord
-WHERE closs_managers.kng_codgcia = :code;
+WHERE user_id = :id
+ORDER BY
+    codcoord ASC,
+    nombrevend ASC;
 
-findBySalesman:
+findStatisticByCode:
 SELECT *
 FROM closs_salesman_statistic
-WHERE vendedor = :code;
+WHERE vendedor = :code AND user_id = :id;
 
 insert:
 INSERT OR REPLACE INTO closs_salesman_statistic(
+    user_id,
     codcoord,
     nomcoord,
     vendedor,
@@ -68,39 +72,9 @@ INSERT OR REPLACE INTO closs_salesman_statistic(
     defdol_totneto,
     totdolcob,
     cntrecl,
-    mtorecl
+    mtorecl,
+    created_at,
+    updated_at
 )
 VALUES ?
-RETURNING *;
-
-update:
-UPDATE closs_salesman_statistic SET
-    codcoord = :codcoord,
-    nomcoord = :nomcoord,
-    vendedor = :vendedor,
-    nombrevend = :nombrevend,
-    cntpedidos = :cntpedidos,
-    mtopedidos = :mtopedidos,
-    cntfacturas = :cntfacturas,
-    mtofacturas = :mtofacturas,
-    metavend = :metavend,
-    prcmeta = :prcmeta,
-    cntclientes = :cntclientes,
-    clivisit = :clivisit,
-    prcvisitas = :prcvisitas,
-    lom_montovtas = :lom_montovtas,
-    lom_prcvtas = :lom_prcvtas,
-    lom_prcvisit = :lom_prcvisit,
-    rlom_montovtas = :rlom_montovtas,
-    rlom_prcvtas = :rlom_prcvtas,
-    rlom_prcvisit = :rlom_prcvisit,
-    fecha_estad = :fecha_estad,
-    ppgdol_totneto = :ppgdol_totneto,
-    devdol_totneto = :devdol_totneto,
-    defdol_totneto = :defdol_totneto,
-    totdolcob = :totdolcob,
-    cntrecl = :cntrecl,
-    mtorecl = :mtorecl,
-    updated_at = CURRENT_TIMESTAMP
-WHERE vendedor = :code
 RETURNING *;

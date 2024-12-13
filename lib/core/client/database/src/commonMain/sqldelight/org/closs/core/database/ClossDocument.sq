@@ -1,7 +1,8 @@
 CREATE TABLE IF NOT EXISTS closs_document(
+    user_id TEXT NOT NULL PRIMARY KEY,
     agencia TEXT NOT NULL DEFAULT '',
     tipodoc TEXT NOT NULL DEFAULT '',
-    documento TEXT NOT NULL PRIMARY KEY,
+    documento TEXT NOT NULL UNIQUE,
     tipodocv TEXT NOT NULL DEFAULT '',
     codcliente TEXT NOT NULL DEFAULT '',
     nombrecli TEXT NOT NULL DEFAULT '',
@@ -57,45 +58,13 @@ CREATE TABLE IF NOT EXISTS closs_document(
     montodctodol REAL NOT NULL DEFAULT 0.00,
     montodctobs REAL NOT NULL DEFAULT 0.00,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES closs_user(id)
 );
-
-findDocument:
-SELECT *
-FROM closs_document
-WHERE documento = :doc;
-
-findDocumentWithLines:
-SELECT *
-FROM closs_document
-LEFT JOIN closs_document_lines
-ON closs_document.documento = closs_document_lines.documento
-WHERE closs_document.documento = :doc;
-
-findDocumentsByManager:
-SELECT closs_document.*
-FROM closs_document
-LEFT JOIN closs_managers
-ON closs_document.codcoord = closs_managers.kng_codcoord
-WHERE closs_managers.kng_codgcia = :manager
-ORDER BY
-    closs_document.vendedor ASC, closs_document.emision DESC, closs_document.codcliente ASC;
-
-findDocumentsBySalesman:
-SELECT closs_document.*
-FROM closs_document
-WHERE closs_document.vendedor = :code
-ORDER BY
-    closs_document.codcliente ASC, closs_document.emision DESC;
-
-findDocumentsByCustomer:
-SELECT closs_document.*
-FROM closs_document
-WHERE closs_document.codcliente = :code
-ORDER BY closs_document.emision DESC;
 
 insert:
 INSERT OR REPLACE INTO closs_document(
+    user_id,
     agencia,
     tipodoc,
     documento,
@@ -152,7 +121,13 @@ INSERT OR REPLACE INTO closs_document(
     dmtoiva,
     prcdctoaplic,
     montodctodol,
-    montodctobs
+    montodctobs,
+    created_at,
+    user_id
 )
 VALUES ?
 RETURNING *;
+
+delete:
+DELETE FROM closs_document
+WHERE documento = :doc AND user_id = :id;
