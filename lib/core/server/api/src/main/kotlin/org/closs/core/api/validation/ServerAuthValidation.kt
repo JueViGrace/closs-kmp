@@ -55,7 +55,6 @@ fun AuthenticationConfig.serverAuthValidation(jwt: Jwt, dbHelper: DbHelper) {
 
             OrderDataValidation(
                 id = order.kti_ndoc,
-                userId = order.
             )
         }
     )
@@ -87,7 +86,7 @@ fun AuthenticationConfig.serverAuthValidation(jwt: Jwt, dbHelper: DbHelper) {
 private suspend fun getUser(id: String, dbHelper: DbHelper): UserIdValidation? {
     val dbUser = dbHelper.withDatabase { db ->
         executeOne(
-            query = db.clossUserQueries.findUser(id)
+            query = db.clossUserQueries.findExistingUser(id)
         )
     }
 
@@ -96,7 +95,8 @@ private suspend fun getUser(id: String, dbHelper: DbHelper): UserIdValidation? {
     }
 
     return UserIdValidation(
-        isAdmin = dbUser.role == Role.ADMIN.value,
-        userId = dbUser.id
+        isAdmin = dbUser.role == Role.Admin.value,
+        userId = dbUser.id,
+        username = dbUser.username
     )
 }

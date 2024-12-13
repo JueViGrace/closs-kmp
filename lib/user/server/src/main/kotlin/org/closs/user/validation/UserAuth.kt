@@ -1,14 +1,15 @@
 package org.closs.user.validation
 
-import org.closs.core.shared.types.user.UpdateUserDto
-import org.closs.core.shared.types.user.UserByIdDto
-import org.closs.core.types.UserIdValidation
-import org.closs.core.util.Jwt
 import io.ktor.server.auth.AuthenticationConfig
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.request.receive
 import kotlinx.serialization.json.Json
+import org.closs.core.shared.types.user.UpdateLastSyncDto
+import org.closs.core.shared.types.user.UserByIdDto
+import org.closs.core.shared.types.user.UserByUsernameDto
+import org.closs.core.types.UserIdValidation
+import org.closs.core.util.Jwt
 
 fun AuthenticationConfig.userAuth(
     name: String,
@@ -36,8 +37,13 @@ fun AuthenticationConfig.userAuth(
                             return@validateCredential null
                         }
                     }
-                    is UpdateUserDto -> {
+                    is UpdateLastSyncDto -> {
                         if (body.id != user.userId) {
+                            return@validateCredential null
+                        }
+                    }
+                    is UserByUsernameDto -> {
+                        if (user.username != body.username) {
                             return@validateCredential null
                         }
                     }

@@ -1,17 +1,16 @@
 package org.closs.order.validation
 
-import org.closs.core.types.OrderDataValidation
-import org.closs.core.types.UserIdValidation
-import org.closs.core.util.Jwt
-import org.closs.core.shared.types.order.CancelOrderDto
-import org.closs.core.shared.types.order.CreateOrderDto
-import org.closs.core.shared.types.order.OrderByUserDto
-import org.closs.core.shared.types.order.OrdersByUserDto
 import io.ktor.server.auth.AuthenticationConfig
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
 import io.ktor.server.request.receive
 import kotlinx.serialization.json.Json
+import org.closs.core.shared.types.order.CreateOrderDto
+import org.closs.core.shared.types.order.OrderByUserDto
+import org.closs.core.shared.types.order.OrdersByUserDto
+import org.closs.core.types.OrderDataValidation
+import org.closs.core.types.UserIdValidation
+import org.closs.core.util.Jwt
 
 fun AuthenticationConfig.ordersAuth(
     name: String,
@@ -47,13 +46,6 @@ fun AuthenticationConfig.ordersAuth(
                     }
                     is CreateOrderDto -> {
                         if (user.userId != body.userId) {
-                            return@validateCredential null
-                        }
-                    }
-                    is CancelOrderDto -> {
-                        val order = orderCall(body.id) ?: return@validateCredential null
-
-                        if (user.userId != order.userId) {
                             return@validateCredential null
                         }
                     }

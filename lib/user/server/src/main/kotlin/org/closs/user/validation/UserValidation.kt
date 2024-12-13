@@ -4,5 +4,7 @@ import io.ktor.server.plugins.requestvalidation.RequestValidationConfig
 
 fun RequestValidationConfig.userValidation() {
     validateUserByIdDto()
-    validateUpdateUserDto()
+    validateUserByUsernameDto()
+    validateCreateUserDto()
+    validateUpdateLastSyncDto()
 }

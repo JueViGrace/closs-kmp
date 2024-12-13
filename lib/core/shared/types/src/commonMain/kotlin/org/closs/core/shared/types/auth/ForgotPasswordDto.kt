@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ForgotPasswordDto(
-    @SerialName("username")
-    val username: String,
+    @SerialName("new_password")
+    val newPassword: String,
 )
