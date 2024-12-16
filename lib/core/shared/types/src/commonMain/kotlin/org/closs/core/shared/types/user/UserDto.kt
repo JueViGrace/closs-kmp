@@ -9,6 +9,8 @@ data class UserDto(
     val id: String,
     @SerialName("username")
     val username: String,
+    @SerialName("code")
+    val code: String,
     @SerialName("last_sync")
     val lastSync: String,
     @SerialName("version")

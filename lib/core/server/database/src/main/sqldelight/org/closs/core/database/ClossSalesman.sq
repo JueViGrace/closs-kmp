@@ -1,5 +1,4 @@
 CREATE TABLE IF NOT EXISTS closs_salesman(
-    user_id TEXT NOT NULL DEFAULT '',
     codigo TEXT NOT NULL PRIMARY KEY,
     nombre TEXT NOT NULL DEFAULT '',
     email TEXT NOT NULL UNIQUE DEFAULT '',
@@ -11,13 +10,11 @@ CREATE TABLE IF NOT EXISTS closs_salesman(
     subcodigo TEXT NOT NULL DEFAULT '',
     nivgcial INTEGER NOT NULL DEFAULT 0,
     created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES closs_user(id)
+    updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-findByManager:
+findSalesmanByManager:
 SELECT
-closs_salesman.user_id,
 closs_salesman.codigo,
 closs_user.username,
 closs_salesman.nombre,
@@ -37,7 +34,7 @@ ON closs_sector.codigo = closs_salesman.sector
 LEFT JOIN closs_subsector
 ON closs_subsector.subcodigo = closs_salesman.subcodigo
 LEFT JOIN closs_user
-ON closs_salesman.user_id = closs_user.id
+ON closs_salesman.codigo = closs_user.codigo
 LEFT JOIN closs_managers
 ON closs_salesman.supervpor = closs_managers.kng_codcoord
 WHERE closs_salesman.status = 1 AND
@@ -46,8 +43,8 @@ GROUP BY closs_salesman.codigo;
 
 findSalesmanByCode:
 SELECT
-closs_salesman.codigo AS vendedor,
-closs_user.username AS username,
+closs_salesman.codigo,
+closs_user.username,
 closs_salesman.nombre,
 closs_salesman.email,
 closs_salesman.telefono,
@@ -63,13 +60,13 @@ ON closs_sector.codigo = closs_salesman.sector
 LEFT JOIN closs_subsector
 ON closs_subsector.subcodigo = closs_salesman.subcodigo
 LEFT JOIN closs_user
-ON closs_salesman.user_id = closs_user.id
+ON closs_salesman.codigo = closs_user.codigo
 WHERE closs_salesman.codigo = :code;
 
 findExistingSalesmanByCode:
 SELECT
-closs_salesman.codigo AS vendedor,
-closs_user.username AS username,
+closs_salesman.codigo,
+closs_user.username,
 closs_salesman.nombre,
 closs_salesman.email,
 closs_salesman.telefono,
@@ -85,12 +82,11 @@ ON closs_sector.codigo = closs_salesman.sector
 LEFT JOIN closs_subsector
 ON closs_subsector.subcodigo = closs_salesman.subcodigo
 LEFT JOIN closs_user
-ON closs_salesman.user_id = closs_user.id
+ON closs_salesman.codigo = closs_user.codigo
 WHERE closs_salesman.codigo = :code AND closs_salesman.status = 1;
 
 insert:
 INSERT OR REPLACE INTO closs_salesman(
-    user_id,
     codigo,
     nombre,
     telefono,
@@ -119,7 +115,7 @@ RETURNING *;
 
 updateUserId:
 UPDATE closs_salesman SET
-    user_id = :id,
+    codigo = :codigo,
     updated_at = CURRENT_TIMESTAMP
 WHERE codigo = :code
 RETURNING *;

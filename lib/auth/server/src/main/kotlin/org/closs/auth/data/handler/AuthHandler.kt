@@ -13,8 +13,8 @@ import kotlin.coroutines.CoroutineContext
 // todo: check for conflicts
 interface AuthHandler {
     suspend fun signIn(dto: SignInDto): APIResponse<AuthDto?>
-    suspend fun refresh(dto: RefreshTokenDto): APIResponse<AuthDto?>
     suspend fun forgotPassword(dto: ForgotPasswordDto): APIResponse<AuthDto?>
+    suspend fun refresh(dto: RefreshTokenDto): APIResponse<AuthDto?>
 }
 
 class DefaultAuthHandler(
@@ -35,11 +35,12 @@ class DefaultAuthHandler(
         }
     }
 
-    override suspend fun refresh(dto: RefreshTokenDto): APIResponse<AuthDto?> {
+    // todo: do this right
+    override suspend fun forgotPassword(dto: ForgotPasswordDto): APIResponse<AuthDto?> {
         return withContext(coroutineContext) {
-            val result = store.refresh(dto)
+            val result = store.forgotPassword(dto)
                 ?: return@withContext ServerResponse.badRequest(
-                    message = "Invalid refresh token"
+                    message = "Unable to process change of password, try again."
                 )
 
             return@withContext ServerResponse.ok(
@@ -49,12 +50,11 @@ class DefaultAuthHandler(
         }
     }
 
-    // todo: do this right
-    override suspend fun forgotPassword(dto: ForgotPasswordDto): APIResponse<AuthDto?> {
+    override suspend fun refresh(dto: RefreshTokenDto): APIResponse<AuthDto?> {
         return withContext(coroutineContext) {
-            val result = store.forgotPassword(dto)
+            val result = store.refresh(dto)
                 ?: return@withContext ServerResponse.badRequest(
-                    message = "Unable to process change of password, try again."
+                    message = "Invalid refresh token"
                 )
 
             return@withContext ServerResponse.ok(

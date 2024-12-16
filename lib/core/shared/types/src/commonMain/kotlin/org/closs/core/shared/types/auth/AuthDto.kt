@@ -1,8 +1,8 @@
 package org.closs.core.shared.types.auth
 
-import org.closs.core.shared.types.user.UserDto
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import org.closs.core.shared.types.user.UserDto
 
 @Serializable
 data class AuthDto(

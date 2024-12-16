@@ -28,7 +28,7 @@ class DefaultAuthStore(
         return dbHelper.withDatabase { db ->
             db.transactionWithResult {
                 executeOne(
-                    query = db.clossUserQueries.findUserByUsername(username)
+                    query = db.clossUserQueries.findExisitngByUsername(username)
                 )
             }
         }
@@ -45,7 +45,11 @@ class DefaultAuthStore(
             userDto = UserDto(
                 id = dbUser.id,
                 username = dbUser.username,
+                code = dbUser.codigo,
+                lastSync = dbUser.ult_sinc,
+                version = dbUser.version,
                 createdAt = dbUser.created_at,
+                updatedAt = dbUser.updated_at,
             )
         )
     }
@@ -56,7 +60,7 @@ class DefaultAuthStore(
 
         val dbUser = dbHelper.withDatabase { db ->
             executeOne(
-                query = db.clossUserQueries.findUser(token.userId)
+                query = db.clossUserQueries.findExistingUser(token.userId)
             )
         }
         if (dbUser == null) {
@@ -67,7 +71,11 @@ class DefaultAuthStore(
             userDto = UserDto(
                 id = dbUser.id,
                 username = dbUser.username,
+                code = dbUser.codigo,
+                lastSync = dbUser.ult_sinc,
+                version = dbUser.version,
                 createdAt = dbUser.created_at,
+                updatedAt = dbUser.updated_at,
             )
         )
     }

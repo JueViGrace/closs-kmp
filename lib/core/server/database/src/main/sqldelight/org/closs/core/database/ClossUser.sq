@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS closs_user(
     id TEXT NOT NULL PRIMARY KEY,
     username TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL DEFAULT '',
+    codigo TEXT NOT NULL DEFAULT '',
     role TEXT NOT NULL DEFAULT 'customer',
     ult_sinc TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
     version TEXT NOT NULL DEFAULT '0.0.0',
@@ -26,7 +27,8 @@ insert:
 INSERT OR REPLACE INTO closs_user(
     id,
     username,
-    password
+    password,
+    codigo
 ) VALUES ?
 RETURNING *;
 

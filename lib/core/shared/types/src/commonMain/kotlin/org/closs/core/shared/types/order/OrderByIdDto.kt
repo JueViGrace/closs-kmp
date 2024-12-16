@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class OrderByIdDto(
-    @SerialName("id")
-    val id: String,
+    @SerialName("kti_ndoc")
+    val ktiNdoc: String,
 )

@@ -46,6 +46,22 @@ include(":lib:auth:client")
 // auth server
 include(":lib:auth:server")
 
+// company library
+
+// company server
+include(":lib:company:server")
+
+// company client
+include(":lib:company:client")
+
+// config library
+
+// config server
+include(":lib:config:server")
+
+// config client
+include(":lib:config:client")
+
 // user library
 
 // user server
@@ -53,6 +69,22 @@ include(":lib:user:server")
 
 // user client
 include(":lib:user:client")
+
+// manager library
+
+// manager server
+include(":lib:manager:server")
+
+// manager client
+include(":lib:manager:client")
+
+// salesman library
+
+// salesman server
+include(":lib:salesman:server")
+
+// salesman client
+include(":lib:salesman:client")
 
 // product library
 
@@ -62,6 +94,14 @@ include(":lib:product:server")
 // product client
 include(":lib:product:client")
 
+// customer library
+
+// customer server
+include(":lib:customer:server")
+
+// customer client
+include(":lib:customer:client")
+
 // order library
 
 // order server
@@ -69,3 +109,11 @@ include(":lib:order:server")
 
 // order client
 include(":lib:order:client")
+
+// document library
+
+// document server
+include(":lib:document:server")
+
+// document client
+include(":lib:document:client")

@@ -8,5 +8,7 @@ data class CreateUserDto(
     @SerialName("username")
     val username: String,
     @SerialName("password")
-    val password: String
+    val password: String,
+    @SerialName("codigo")
+    val code: String
 )

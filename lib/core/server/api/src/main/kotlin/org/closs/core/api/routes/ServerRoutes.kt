@@ -8,6 +8,8 @@ import io.ktor.server.routing.Routing
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import org.closs.auth.routes.authRoutes
+import org.closs.company.routes.companyRoutes
+import org.closs.config.routes.configRoutes
 import org.closs.order.routes.orderRoutes
 import org.closs.product.routes.productRoutes
 import org.closs.user.routes.userRoutes
@@ -28,6 +30,8 @@ fun Route.apiRoutes() {
     }
 
     authRoutes()
+    companyRoutes()
+    configRoutes()
     userRoutes()
     productRoutes()
     orderRoutes()

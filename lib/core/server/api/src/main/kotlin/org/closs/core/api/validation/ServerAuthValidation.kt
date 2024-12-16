@@ -9,8 +9,8 @@ import org.closs.core.types.OrderDataValidation
 import org.closs.core.types.Role
 import org.closs.core.types.UserIdValidation
 import org.closs.core.util.Jwt
-import org.closs.order.validation.ordersAuth
-import org.closs.user.validation.userAuth
+import org.closs.order.validation.auth.ordersAuth
+import org.closs.user.validation.auth.userAuth
 
 fun AuthenticationConfig.serverAuthValidation(jwt: Jwt, dbHelper: DbHelper) {
     jwt(JwtAuthName.SESSION.value) {

@@ -21,6 +21,12 @@ dependencies {
     // Auth
     implementation(projects.lib.auth.server)
 
+    // Company
+    implementation(projects.lib.company.server)
+
+    // Config
+    implementation(projects.lib.config.server)
+
     // User
     implementation(projects.lib.user.server)
 

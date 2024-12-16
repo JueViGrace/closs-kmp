@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class OrdersByUserDto(
-    @SerialName("user_id")
-    val userId: String,
+    @SerialName("user_code")
+    val code: String,
 )

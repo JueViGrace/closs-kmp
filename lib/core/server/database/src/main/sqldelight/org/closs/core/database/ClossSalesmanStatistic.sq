@@ -29,14 +29,14 @@ CREATE TABLE IF NOT EXISTS closs_salesman_statistic(
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-findByManagerCode:
-SELECT *
+findStatisticsByManager:
+SELECT closs_salesman_statistic.*
 FROM closs_salesman_statistic
 LEFT JOIN closs_managers
 ON closs_salesman_statistic.codcoord = closs_managers.kng_codcoord
 WHERE closs_managers.kng_codgcia = :code;
 
-findBySalesman:
+findStatisticsBySalesman:
 SELECT *
 FROM closs_salesman_statistic
 WHERE vendedor = :code;

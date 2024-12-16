@@ -7,6 +7,11 @@ CREATE TABLE IF NOT EXISTS closs_managers(
     PRIMARY KEY (kng_codgcia, kng_codcoord)
 );
 
+findManager:
+SELECT *
+FROM closs_managers
+WHERE kng_codgcia = :code;
+
 insert:
 INSERT OR REPLACE INTO closs_managers(
     kng_codgcia,

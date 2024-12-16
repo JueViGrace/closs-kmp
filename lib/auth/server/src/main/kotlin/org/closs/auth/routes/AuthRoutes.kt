@@ -3,7 +3,6 @@ package org.closs.auth.routes
 import io.ktor.http.Cookie
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
-import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
@@ -19,9 +18,8 @@ fun Route.authRoutes() {
     val handler: AuthHandler by inject<AuthHandler>()
 
     route("/auth") {
-        post("/signIn") {
-            val body = call.receive<SignInDto>()
-            val response = handler.signIn(body)
+        post<SignInDto>("/signIn") { dto ->
+            val response = handler.signIn(dto)
 
             call.applicationResponse(
                 response = response,
@@ -48,9 +46,8 @@ fun Route.authRoutes() {
             )
         }
 
-        post("/forgotPassword") {
-            val body = call.receive<ForgotPasswordDto>()
-            val response = handler.forgotPassword(body)
+        post<ForgotPasswordDto>("/forgotPassword") { dto ->
+            val response = handler.forgotPassword(dto)
 
             call.applicationResponse(
                 response = response,
@@ -75,9 +72,8 @@ fun Route.authRoutes() {
             )
         }
 
-        post("/refresh") {
-            val body = call.receive<RefreshTokenDto>()
-            val response = handler.refresh(body)
+        post<RefreshTokenDto>("/refresh") { dto ->
+            val response = handler.refresh(dto)
 
             call.applicationResponse(
                 response = response,
