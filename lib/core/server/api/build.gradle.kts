@@ -30,11 +30,23 @@ dependencies {
     // User
     implementation(projects.lib.user.server)
 
+    // Manager
+    implementation(projects.lib.manager.server)
+
+    // Salesman
+    implementation(projects.lib.salesman.server)
+
+    // Customer
+    implementation(projects.lib.customer.server)
+
     // Product
     implementation(projects.lib.product.server)
 
     // Order
     implementation(projects.lib.order.server)
+
+    // Document
+    implementation(projects.lib.document.server)
 
     // Server
     implementation(libs.ktor.server.core)

@@ -46,11 +46,8 @@ class DefaultUserStorage(
                         .insert(
                             closs_user = dto.toDb()
                         ).executeAsOneOrNull()
-                        ?.toDto()
-                    if (user == null) {
-                        rollback(null)
-                    }
-                    user
+                        ?: rollback(null)
+                    getExistingUserById(user.id)
                 }
             }
         }.await()
@@ -66,11 +63,8 @@ class DefaultUserStorage(
                             version = dto.version,
                             id = dto.id
                         ).executeAsOneOrNull()
-                        ?.toDto()
-                    if (user == null) {
-                        rollback(null)
-                    }
-                    user
+                        ?: rollback(null)
+                    getExistingUserById(user.id)
                 }
             }
         }.await()

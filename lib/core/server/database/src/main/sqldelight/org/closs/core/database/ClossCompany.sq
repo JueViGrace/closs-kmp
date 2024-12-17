@@ -21,8 +21,7 @@ WHERE ked_codigo = :code;
 findExistingCompanyByCode:
 SELECT *
 FROM closs_company
-WHERE ked_codigo = :code AND (ked_status = 1 OR deleted_at IS NULL)
-;
+WHERE ked_codigo = :code AND (ked_status = 1 OR deleted_at IS NULL);
 
 insert:
 INSERT OR REPLACE INTO closs_company(

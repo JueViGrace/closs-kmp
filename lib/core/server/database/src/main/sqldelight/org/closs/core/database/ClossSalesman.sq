@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS closs_salesman(
     updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
-findSalesmanByManager:
+findSalesmenByManager:
 SELECT
 closs_salesman.codigo,
 closs_user.username,
@@ -53,7 +53,9 @@ closs_salesman.supervpor,
 closs_sector.zona AS sector,
 closs_subsector.subsector AS subsector,
 closs_user.ult_sinc,
-closs_user.version
+closs_user.version,
+closs_salesman.created_at,
+closs_salesman.updated_at
 FROM closs_salesman
 LEFT JOIN closs_sector
 ON closs_sector.codigo = closs_salesman.sector
@@ -75,7 +77,9 @@ closs_salesman.supervpor,
 closs_sector.zona AS sector,
 closs_subsector.subsector AS subsector,
 closs_user.ult_sinc,
-closs_user.version
+closs_user.version,
+closs_salesman.created_at,
+closs_salesman.updated_at
 FROM closs_salesman
 LEFT JOIN closs_sector
 ON closs_sector.codigo = closs_salesman.sector
@@ -110,12 +114,5 @@ UPDATE closs_salesman SET
     sector = :sector,
     subcodigo = :subcodigo,
     email = :email
-WHERE codigo = :code
-RETURNING *;
-
-updateUserId:
-UPDATE closs_salesman SET
-    codigo = :codigo,
-    updated_at = CURRENT_TIMESTAMP
 WHERE codigo = :code
 RETURNING *;

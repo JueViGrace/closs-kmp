@@ -22,6 +22,39 @@ SELECT *
 FROM closs_config
 WHERE username = :username;
 
+findConfigNum:
+SELECT cnfg_valnum
+FROM closs_config
+WHERE
+cnfg_idconfig = :key AND
+cnfg_activa = 1 AND
+username = :username;
+
+findConfigBool:
+SELECT cnfg_valsino
+FROM closs_config
+WHERE
+cnfg_idconfig = :key AND
+cnfg_activa = 1 AND
+username = :username;
+
+findConfigText:
+SELECT cnfg_valtxt
+FROM closs_config
+WHERE
+cnfg_idconfig = :key AND
+cnfg_activa = 1 AND
+username = :username;
+
+findConfigDate:
+SELECT cnfg_valfch
+FROM closs_config
+WHERE
+cnfg_idconfig = :key AND
+cnfg_activa = 1 AND
+username = :username;
+
+
 insert:
 INSERT OR REPLACE INTO closs_config(
     cnfg_idconfig,

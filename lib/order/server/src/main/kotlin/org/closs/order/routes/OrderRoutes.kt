@@ -23,7 +23,7 @@ fun Route.orderRoutes() {
                 }
             }
 
-            authenticate(JwtAuthName.ORDER.value, strategy = AuthenticationStrategy.Required) {
+            authenticate(JwtAuthName.ORDER_ROUTES.value, strategy = AuthenticationStrategy.Required) {
 
             }
         }

@@ -34,6 +34,23 @@ CREATE TABLE IF NOT EXISTS closs_customer(
     FOREIGN KEY (user_id) REFERENCES closs_user(id)
 );
 
+findCustomers:
+SELECT *
+FROM closs_customer
+WHERE
+    user_id = :id AND
+    codigo = :code
+ORDER BY
+    vendedor ASC,
+    nombre ASC;
+
+findCustomersBySalesman:
+SELECT *
+FROM closs_customer
+WHERE closs_customer.vendedor = :code
+ORDER BY
+    closs_customer.nombre ASC;
+
 insert:
 INSERT OR REPLACE INTO closs_customer(
     user_id,

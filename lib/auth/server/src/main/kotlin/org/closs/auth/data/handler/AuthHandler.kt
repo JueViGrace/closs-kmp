@@ -23,7 +23,7 @@ class DefaultAuthHandler(
 ) : AuthHandler {
     override suspend fun signIn(dto: SignInDto): APIResponse<AuthDto?> {
         return withContext(coroutineContext) {
-            val result = store.getValidUser(dto)
+            val result = store.signIn(dto)
                 ?: return@withContext ServerResponse.badRequest(
                     message = "Invalid credentials"
                 )

@@ -41,7 +41,7 @@ class DefaultConfigHandler(
                     message = "Unable to create configuration, try again later"
                 )
 
-            ServerResponse.ok(
+            ServerResponse.created(
                 data = result,
                 message = "Processed successfully"
             )

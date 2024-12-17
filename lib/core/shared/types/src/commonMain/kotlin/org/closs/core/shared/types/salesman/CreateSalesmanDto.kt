@@ -15,6 +15,8 @@ data class CreateSalesmanDto(
     val telefono: String,
     @SerialName("telefonos")
     val telefonos: String,
+    @SerialName("status")
+    val status: Int,
     @SerialName("supervpor")
     val supervpor: String,
     @SerialName("sector")

@@ -11,13 +11,11 @@ import org.closs.core.types.product.toDto
 
 interface ProductStorage {
     suspend fun getProducts(): List<ProductDto>
-    suspend fun getProductById(id: String): ProductDto?
+    suspend fun getProductByCode(code: String): ProductDto?
     suspend fun getExistingProducts(): List<ProductDto>
-    suspend fun getExistingProductById(id: String): ProductDto?
+    suspend fun getExistingProductByCode(code: String): ProductDto?
     suspend fun createProduct(dto: CreateProductDto, images: List<String>): ProductDto?
     suspend fun updateProduct(dto: UpdateProductDto, images: List<String>): ProductDto?
-    suspend fun softDeleteProduct(id: String): ProductDto?
-    suspend fun deleteProduct(id: String): ProductDto?
 }
 
 class DefaultProductStorage(
@@ -34,10 +32,10 @@ class DefaultProductStorage(
         }
     }
 
-    override suspend fun getProductById(id: String): ProductDto? {
+    override suspend fun getProductByCode(code: String): ProductDto? {
         return dbHelper.withDatabase { db ->
             executeOne(
-                query = db.clossProductQueries.findProduct(id)
+                query = db.clossProductQueries.findProductByCode(code)
             )?.toDto()
         }
     }
@@ -52,10 +50,10 @@ class DefaultProductStorage(
         }
     }
 
-    override suspend fun getExistingProductById(id: String): ProductDto? {
+    override suspend fun getExistingProductByCode(code: String): ProductDto? {
         return dbHelper.withDatabase { db ->
             executeOne(
-                query = db.clossProductQueries.findExistingProduct(id)
+                query = db.clossProductQueries.findExistingProductByCode(code)
             )?.toDto()
         }
     }
@@ -80,45 +78,45 @@ class DefaultProductStorage(
         return scope.async {
             dbHelper.withDatabase { db ->
                 db.transactionWithResult {
-                    val product = db.clossProductQueries
+                    db.clossProductQueries
                         .update(
+                            grupo = dto.grupo,
+                            subgrupo = dto.subgrupo,
+                            nombre = dto.nombre,
+                            referencia = dto.referencia,
+                            marca = dto.marca,
+                            unidad = dto.unidad,
+                            discont = dto.discont,
+                            existencia = dto.existencia,
+                            vta_max = dto.vtaMax,
+                            vta_min = dto.vtaMin,
+                            vta_minenx = dto.vtaMinEx,
+                            comprometido = dto.comprometido,
+                            precio1 = dto.precio1,
+                            precio2 = dto.precio2,
+                            precio3 = dto.precio3,
+                            precio4 = dto.precio4,
+                            precio5 = dto.precio5,
+                            precio6 = dto.precio6,
+                            precio7 = dto.precio7,
+                            preventa = dto.preventa,
+                            vta_solofac = dto.vtaSoloFac,
+                            vta_solone = dto.vtaSoloNe,
+                            codbarras = dto.codBarras,
+                            detalles = dto.detalles,
+                            cantbulto = dto.cantBulto,
+                            costo_prom = dto.costoProm,
+                            util1 = dto.util1,
+                            util2 = dto.util2,
+                            util3 = dto.util3,
+                            fchultcomp = dto.fchUltComp,
+                            qtyultcomp = dto.qtyUltComp,
                             images = images.joinToString(","),
-                            id = dto.id
+                            code = dto.codigo
                         )
                         .executeAsOneOrNull()
                         ?.toDto()
-                    if (product == null) {
-                        rollback(null)
-                    }
-                    product
-                }
-            }
-        }.await()
-    }
-
-    override suspend fun softDeleteProduct(id: String): ProductDto? {
-        return scope.async {
-            dbHelper.withDatabase { db ->
-                db.transactionWithResult {
-                    val product = db.clossProductQueries.softDelete(id).executeAsOneOrNull()?.toDto()
-                    if (product != null) {
-                        rollback(product)
-                    }
-                    null
-                }
-            }
-        }.await()
-    }
-
-    override suspend fun deleteProduct(id: String): ProductDto? {
-        return scope.async {
-            dbHelper.withDatabase { db ->
-                db.transactionWithResult {
-                    val product = db.clossProductQueries.delete(id).executeAsOneOrNull()?.toDto()
-                    if (product != null) {
-                        rollback(product)
-                    }
-                    null
+                        ?: rollback(null)
                 }
             }
         }.await()

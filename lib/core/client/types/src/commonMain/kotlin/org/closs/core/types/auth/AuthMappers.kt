@@ -15,7 +15,11 @@ fun FindActiveAccount.dbActiveToDomain(): Session = Session(
     user = User(
         id = id ?: "",
         username = username ?: "",
+        code = code ?: "",
+        lastSync = last_sync ?: "",
+        version = version ?: "",
         createdAt = created_at ?: "",
+        updatedAt = updated_at ?: "",
     )
 )
 
@@ -25,7 +29,11 @@ fun FindAccounts.dbAccountsToDomain(): Session = Session(
     user = User(
         id = id ?: "",
         username = username ?: "",
+        code = code ?: "",
+        lastSync = last_sync ?: "",
+        version = version ?: "",
         createdAt = created_at ?: "",
+        updatedAt = updated_at ?: "",
     )
 )
 

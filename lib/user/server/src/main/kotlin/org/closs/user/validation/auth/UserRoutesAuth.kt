@@ -11,7 +11,7 @@ import org.closs.core.shared.types.user.UserByUsernameDto
 import org.closs.core.types.UserIdValidation
 import org.closs.core.util.Jwt
 
-fun AuthenticationConfig.userAuth(
+fun AuthenticationConfig.userRoutesAuth(
     name: String,
     jwt: Jwt,
     userCall: suspend (String) -> UserIdValidation?

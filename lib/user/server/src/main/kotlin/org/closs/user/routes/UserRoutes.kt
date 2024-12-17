@@ -22,174 +22,193 @@ import org.koin.ktor.ext.inject
 
 fun Route.userRoutes() {
     val handler: UserHandler by inject<UserHandler>()
+    route("/users") {
+        authenticate(JwtAuthName.ADMIN.value, strategy = AuthenticationStrategy.Required) {
+            route("/admin") {
+                createUserRoute(handler)
 
-    // Normal user auth
-    authenticate(JwtAuthName.SESSION.value, strategy = AuthenticationStrategy.Required) {
-        route("/users") {
-            // Admin user auth
-            authenticate(JwtAuthName.ADMIN.value, strategy = AuthenticationStrategy.Required) {
-                route("/admin") {
-                    post<CreateUserDto> { dto ->
-                        val response = handler.createUser(dto)
+                softDeleteUserRoute(handler)
 
-                        call.applicationResponse(
-                            response = response,
-                            onFailure = { res ->
-                                call.respond(
-                                    status = HttpStatusCode(
-                                        value = res.status,
-                                        description = res.description,
-                                    ),
-                                    message = res
-                                )
-                            },
-                            onSuccess = { res ->
-                                call.respond(
-                                    status = HttpStatusCode(
-                                        value = res.status,
-                                        description = res.description,
-                                    ),
-                                    message = res
-                                )
-                            }
-                        )
-                    }
-
-                    delete {
-                        val body = call.receive<UserByIdDto>()
-                        val response = handler.softDeleteUser(body.id)
-
-                        call.applicationResponse(
-                            response = response,
-                            onFailure = { res ->
-                                call.respond(
-                                    status = HttpStatusCode(
-                                        value = res.status,
-                                        description = res.description,
-                                    ),
-                                    message = res
-                                )
-                            },
-                            onSuccess = { res ->
-                                call.respond(
-                                    status = HttpStatusCode(
-                                        value = res.status,
-                                        description = res.description,
-                                    ),
-                                    message = res
-                                )
-                            }
-                        )
-                    }
-
-                    delete("/forever") {
-                        val body = call.receive<UserByIdDto>()
-                        val response = handler.deleteUser(body.id)
-
-                        call.applicationResponse(
-                            response = response,
-                            onFailure = { res ->
-                                call.respond(
-                                    status = HttpStatusCode(
-                                        value = res.status,
-                                        description = res.description,
-                                    ),
-                                    message = res
-                                )
-                            },
-                            onSuccess = { res ->
-                                call.respond(
-                                    status = HttpStatusCode(
-                                        value = res.status,
-                                        description = res.description,
-                                    ),
-                                    message = res
-                                )
-                            }
-                        )
-                    }
-                }
-            }
-
-            authenticate(JwtAuthName.USER.value, strategy = AuthenticationStrategy.Required) {
-                post<UserByIdDto> { body ->
-                    val response = handler.getExistingUserById(body.id)
-
-                    call.applicationResponse(
-                        response = response,
-                        onFailure = { res ->
-                            call.respond(
-                                status = HttpStatusCode(
-                                    value = res.status,
-                                    description = res.description,
-                                ),
-                                message = res
-                            )
-                        },
-                        onSuccess = { res ->
-                            call.respond(
-                                status = HttpStatusCode(
-                                    value = res.status,
-                                    description = res.description,
-                                ),
-                                message = res
-                            )
-                        }
-                    )
-                }
-
-                post<UserByUsernameDto> { body ->
-                    val response = handler.getExistingUserByUsername(body.username)
-
-                    call.applicationResponse(
-                        response = response,
-                        onFailure = { res ->
-                            call.respond(
-                                status = HttpStatusCode(
-                                    value = res.status,
-                                    description = res.description,
-                                ),
-                                message = res
-                            )
-                        },
-                        onSuccess = { res ->
-                            call.respond(
-                                status = HttpStatusCode(
-                                    value = res.status,
-                                    description = res.description,
-                                ),
-                                message = res
-                            )
-                        }
-                    )
-                }
-
-                patch<UpdateLastSyncDto> { body ->
-                    val response = handler.updateLastSync(body)
-
-                    call.applicationResponse(
-                        response = response,
-                        onFailure = { res ->
-                            call.respond(
-                                status = HttpStatusCode(
-                                    value = res.status,
-                                    description = res.description,
-                                ),
-                                message = res
-                            )
-                        },
-                        onSuccess = { res ->
-                            call.respond(
-                                status = HttpStatusCode(
-                                    value = res.status,
-                                    description = res.description,
-                                ),
-                                message = res
-                            )
-                        }
-                    )
-                }
+                deleteUserRoute(handler)
             }
         }
+
+        authenticate(JwtAuthName.USER_ROUTES.value, strategy = AuthenticationStrategy.Required) {
+            getExistingUserByIdRoute(handler)
+
+            getExistingUserByUsernameRoute(handler)
+
+            updateLastSyncRoute(handler)
+        }
+    }
+}
+
+fun Route.createUserRoute(handler: UserHandler) {
+    post<CreateUserDto> { dto ->
+        val response = handler.createUser(dto)
+
+        call.applicationResponse(
+            response = response,
+            onFailure = { res ->
+                call.respond(
+                    status = HttpStatusCode(
+                        value = res.status,
+                        description = res.description,
+                    ),
+                    message = res
+                )
+            },
+            onSuccess = { res ->
+                call.respond(
+                    status = HttpStatusCode(
+                        value = res.status,
+                        description = res.description,
+                    ),
+                    message = res
+                )
+            }
+        )
+    }
+}
+
+fun Route.updateLastSyncRoute(handler: UserHandler) {
+    patch<UpdateLastSyncDto> { body ->
+        val response = handler.updateLastSync(body)
+
+        call.applicationResponse(
+            response = response,
+            onFailure = { res ->
+                call.respond(
+                    status = HttpStatusCode(
+                        value = res.status,
+                        description = res.description,
+                    ),
+                    message = res
+                )
+            },
+            onSuccess = { res ->
+                call.respond(
+                    status = HttpStatusCode(
+                        value = res.status,
+                        description = res.description,
+                    ),
+                    message = res
+                )
+            }
+        )
+    }
+}
+
+fun Route.softDeleteUserRoute(handler: UserHandler) {
+    delete {
+        val body = call.receive<UserByIdDto>()
+        val response = handler.softDeleteUser(body.id)
+
+        call.applicationResponse(
+            response = response,
+            onFailure = { res ->
+                call.respond(
+                    status = HttpStatusCode(
+                        value = res.status,
+                        description = res.description,
+                    ),
+                    message = res
+                )
+            },
+            onSuccess = { res ->
+                call.respond(
+                    status = HttpStatusCode(
+                        value = res.status,
+                        description = res.description,
+                    ),
+                    message = res
+                )
+            }
+        )
+    }
+}
+
+fun Route.deleteUserRoute(handler: UserHandler) {
+    delete("/forever") {
+        val body = call.receive<UserByIdDto>()
+        val response = handler.deleteUser(body.id)
+
+        call.applicationResponse(
+            response = response,
+            onFailure = { res ->
+                call.respond(
+                    status = HttpStatusCode(
+                        value = res.status,
+                        description = res.description,
+                    ),
+                    message = res
+                )
+            },
+            onSuccess = { res ->
+                call.respond(
+                    status = HttpStatusCode(
+                        value = res.status,
+                        description = res.description,
+                    ),
+                    message = res
+                )
+            }
+        )
+    }
+}
+
+fun Route.getExistingUserByIdRoute(handler: UserHandler) {
+    post<UserByIdDto> { body ->
+        val response = handler.getExistingUserById(body.id)
+
+        call.applicationResponse(
+            response = response,
+            onFailure = { res ->
+                call.respond(
+                    status = HttpStatusCode(
+                        value = res.status,
+                        description = res.description,
+                    ),
+                    message = res
+                )
+            },
+            onSuccess = { res ->
+                call.respond(
+                    status = HttpStatusCode(
+                        value = res.status,
+                        description = res.description,
+                    ),
+                    message = res
+                )
+            }
+        )
+    }
+}
+
+fun Route.getExistingUserByUsernameRoute(handler: UserHandler) {
+    post<UserByUsernameDto> { body ->
+        val response = handler.getExistingUserByUsername(body.username)
+
+        call.applicationResponse(
+            response = response,
+            onFailure = { res ->
+                call.respond(
+                    status = HttpStatusCode(
+                        value = res.status,
+                        description = res.description,
+                    ),
+                    message = res
+                )
+            },
+            onSuccess = { res ->
+                call.respond(
+                    status = HttpStatusCode(
+                        value = res.status,
+                        description = res.description,
+                    ),
+                    message = res
+                )
+            }
+        )
     }
 }

@@ -10,7 +10,7 @@ import org.closs.core.types.Role
 import org.closs.core.types.UserIdValidation
 import org.closs.core.util.Jwt
 import org.closs.order.validation.auth.ordersAuth
-import org.closs.user.validation.auth.userAuth
+import org.closs.user.validation.auth.userRoutesAuth
 
 fun AuthenticationConfig.serverAuthValidation(jwt: Jwt, dbHelper: DbHelper) {
     jwt(JwtAuthName.SESSION.value) {
@@ -30,34 +30,6 @@ fun AuthenticationConfig.serverAuthValidation(jwt: Jwt, dbHelper: DbHelper) {
             }
         }
     }
-
-    userAuth(
-        name = JwtAuthName.USER.value,
-        jwt = jwt,
-        userCall = { id ->
-            getUser(id, dbHelper)
-        }
-    )
-
-    ordersAuth(
-        name = JwtAuthName.ORDER.value,
-        jwt = jwt,
-        userCall = { id ->
-            getUser(id, dbHelper)
-        },
-        orderCall = { id ->
-            val order = dbHelper.withDatabase { db ->
-                executeOne(db.clossOrderQueries.findOrder(id))
-            }
-            if (order == null) {
-                return@ordersAuth null
-            }
-
-            OrderDataValidation(
-                id = order.kti_ndoc,
-            )
-        }
-    )
 
     jwt(JwtAuthName.ADMIN.value) {
         realm = jwt.realm
@@ -81,6 +53,37 @@ fun AuthenticationConfig.serverAuthValidation(jwt: Jwt, dbHelper: DbHelper) {
             }
         }
     }
+
+    userRoutesAuth(
+        name = JwtAuthName.USER_ROUTES.value,
+        jwt = jwt,
+        userCall = { id ->
+            getUser(id, dbHelper)
+        }
+    )
+
+    ordersAuth(
+        name = JwtAuthName.ORDER_ROUTES.value,
+        jwt = jwt,
+        userCall = { id ->
+            getUser(id, dbHelper)
+        },
+        orderCall = { id ->
+            // todo: change query to find managers
+            val order = dbHelper.withDatabase { db ->
+                executeOne(db.clossOrderQueries.findOrder(id))
+            }
+            if (order == null) {
+                return@ordersAuth null
+            }
+
+            OrderDataValidation(
+                document = order.kti_ndoc,
+                salesman = order.kti_codven,
+                customer = order.kti_codcli
+            )
+        }
+    )
 }
 
 private suspend fun getUser(id: String, dbHelper: DbHelper): UserIdValidation? {
@@ -95,8 +98,9 @@ private suspend fun getUser(id: String, dbHelper: DbHelper): UserIdValidation? {
     }
 
     return UserIdValidation(
-        isAdmin = dbUser.role == Role.Admin.value,
+        isAdmin = Role.valueOf(dbUser.role) == Role.ADMIN,
         userId = dbUser.id,
-        username = dbUser.username
+        username = dbUser.username,
+        code = dbUser.codigo
     )
 }

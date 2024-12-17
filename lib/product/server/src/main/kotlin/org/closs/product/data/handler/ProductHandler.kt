@@ -1,23 +1,21 @@
 package org.closs.product.data.handler
 
+import kotlinx.coroutines.withContext
 import org.closs.core.shared.types.product.CreateProductDto
 import org.closs.core.shared.types.product.ProductDto
 import org.closs.core.shared.types.product.UpdateProductDto
 import org.closs.core.types.APIResponse
 import org.closs.core.types.ServerResponse
 import org.closs.product.data.storage.ProductStorage
-import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
 interface ProductHandler {
     suspend fun getProducts(): APIResponse<List<ProductDto>>
-    suspend fun getProductById(id: String): APIResponse<ProductDto?>
+    suspend fun getProductByCode(code: String): APIResponse<ProductDto?>
     suspend fun getExistingProducts(): APIResponse<List<ProductDto>>
-    suspend fun getExistingProductById(id: String): APIResponse<ProductDto?>
+    suspend fun getExistingProductByCode(code: String): APIResponse<ProductDto?>
     suspend fun createProduct(dto: CreateProductDto, images: List<String>): APIResponse<ProductDto?>
     suspend fun updateProduct(dto: UpdateProductDto, images: List<String>): APIResponse<ProductDto?>
-    suspend fun softDeleteProduct(id: String): APIResponse<String>
-    suspend fun deleteProduct(id: String): APIResponse<String>
 }
 
 class DefaultProductHandler(
@@ -42,15 +40,12 @@ class DefaultProductHandler(
         }
     }
 
-    override suspend fun getProductById(id: String): APIResponse<ProductDto?> {
+    override suspend fun getProductByCode(code: String): APIResponse<ProductDto?> {
         return withContext(coroutineContext) {
-            val result = store.getProductById(id)
-
-            if (result == null) {
-                return@withContext ServerResponse.notFound(
-                    message = "Products with id $id was not found"
+            val result = store.getProductByCode(code)
+                ?: return@withContext ServerResponse.notFound(
+                    message = "Products with code $code was not found"
                 )
-            }
 
             ServerResponse.ok(
                 data = result,
@@ -77,15 +72,12 @@ class DefaultProductHandler(
         }
     }
 
-    override suspend fun getExistingProductById(id: String): APIResponse<ProductDto?> {
+    override suspend fun getExistingProductByCode(code: String): APIResponse<ProductDto?> {
         return withContext(coroutineContext) {
-            val result = store.getExistingProductById(id)
-
-            if (result == null) {
-                return@withContext ServerResponse.notFound(
-                    message = "Products with id $id was not found"
+            val result = store.getExistingProductByCode(code)
+                ?: return@withContext ServerResponse.notFound(
+                    message = "Products with code $code was not found"
                 )
-            }
 
             ServerResponse.ok(
                 data = result,
@@ -100,12 +92,9 @@ class DefaultProductHandler(
     ): APIResponse<ProductDto?> {
         return withContext(coroutineContext) {
             val result = store.createProduct(dto, images)
-
-            if (result == null) {
-                return@withContext ServerResponse.notFound(
+                ?: return@withContext ServerResponse.notFound(
                     message = "Unable to create product, try again later"
                 )
-            }
 
             ServerResponse.created(
                 data = result,
@@ -120,49 +109,12 @@ class DefaultProductHandler(
     ): APIResponse<ProductDto?> {
         return withContext(coroutineContext) {
             val result = store.updateProduct(dto, images = emptyList())
-
-            if (result == null) {
-                return@withContext ServerResponse.notFound(
+                ?: return@withContext ServerResponse.notFound(
                     message = "Unable to update product, try again later"
                 )
-            }
 
             ServerResponse.accepted(
                 data = result,
-                message = "Processed successfully"
-            )
-        }
-    }
-
-    override suspend fun softDeleteProduct(id: String): APIResponse<String> {
-        return withContext(coroutineContext) {
-            val result = store.softDeleteProduct(id)
-
-            if (result != null) {
-                return@withContext ServerResponse.notFound(
-                    message = "Unable to delete product, try again later"
-                )
-            }
-
-            ServerResponse.ok(
-                data = "Product with id $id was deleted!",
-                message = "Processed successfully"
-            )
-        }
-    }
-
-    override suspend fun deleteProduct(id: String): APIResponse<String> {
-        return withContext(coroutineContext) {
-            val result = store.deleteProduct(id)
-
-            if (result != null) {
-                return@withContext ServerResponse.notFound(
-                    message = ""
-                )
-            }
-
-            ServerResponse.ok(
-                data = "Product with id $id was permanently deleted!",
                 message = "Processed successfully"
             )
         }

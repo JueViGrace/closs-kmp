@@ -10,8 +10,12 @@ import io.ktor.server.routing.route
 import org.closs.auth.routes.authRoutes
 import org.closs.company.routes.companyRoutes
 import org.closs.config.routes.configRoutes
+import org.closs.customer.routes.customerRoutes
+import org.closs.document.routes.documentRoutes
+import org.closs.manager.routes.managerRoutes
 import org.closs.order.routes.orderRoutes
 import org.closs.product.routes.productRoutes
+import org.closs.salesman.routes.salesmanRoutes
 import org.closs.user.routes.userRoutes
 
 fun Routing.serverRoutes() {
@@ -33,8 +37,12 @@ fun Route.apiRoutes() {
     companyRoutes()
     configRoutes()
     userRoutes()
+    managerRoutes()
+    salesmanRoutes()
+    customerRoutes()
     productRoutes()
     orderRoutes()
+    documentRoutes()
 }
 
 fun Route.webRoutes() {

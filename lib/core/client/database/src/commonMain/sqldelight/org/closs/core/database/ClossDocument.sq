@@ -62,6 +62,37 @@ CREATE TABLE IF NOT EXISTS closs_document(
     FOREIGN KEY (user_id) REFERENCES closs_user(id)
 );
 
+findDocuments:
+SELECT *
+FROM closs_document
+WHERE user_id = :id;
+
+findDocumentWithLines:
+SELECT *
+FROM closs_document
+LEFT JOIN closs_document_lines
+ON closs_document.documento = closs_document_lines.documento
+WHERE
+closs_document.user_id = :id AND
+closs_document.documento = :doc;
+
+findDocumentsBySalesman:
+SELECT closs_document.*
+FROM closs_document
+WHERE
+closs_document.user_id = :id AND
+closs_document.vendedor = :code
+ORDER BY
+    closs_document.codcliente ASC, closs_document.emision DESC;
+
+findDocumentsByCustomer:
+SELECT closs_document.*
+FROM closs_document
+WHERE
+closs_document.user_id = :id AND
+closs_document.codcliente = :code
+ORDER BY closs_document.emision DESC;
+
 insert:
 INSERT OR REPLACE INTO closs_document(
     user_id,

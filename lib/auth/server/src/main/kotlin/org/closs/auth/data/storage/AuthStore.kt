@@ -14,7 +14,7 @@ import org.closs.core.util.Jwt
 import org.closs.core.util.Kbcrypt
 
 interface AuthStore {
-    suspend fun getValidUser(dto: SignInDto): AuthDto?
+    suspend fun signIn(dto: SignInDto): AuthDto?
     suspend fun refresh(dto: RefreshTokenDto): AuthDto?
     suspend fun forgotPassword(dto: ForgotPasswordDto): AuthDto?
 }
@@ -34,7 +34,7 @@ class DefaultAuthStore(
         }
     }
 
-    override suspend fun getValidUser(dto: SignInDto): AuthDto? {
+    override suspend fun signIn(dto: SignInDto): AuthDto? {
         val dbUser: DbUser? = findUserByUsername(dto.username)
 
         if (dbUser == null || !Kbcrypt.verifyPassword(dto.password, dbUser.password)) {
@@ -54,9 +54,12 @@ class DefaultAuthStore(
         )
     }
 
-    // todo: delete old token?
     override suspend fun refresh(dto: RefreshTokenDto): AuthDto? {
-        val token = jwt.verifyToken(dto.refreshToken) ?: return null
+        val token = jwt.verifyToken(dto.refreshToken)
+        if (token == null) {
+            deleteToken(dto.refreshToken)
+            return null
+        }
 
         val dbUser = dbHelper.withDatabase { db ->
             executeOne(
@@ -90,11 +93,15 @@ class DefaultAuthStore(
         val accessToken = jwt.createAccessToken(
             claims = mapOf(
                 "user_id" to userDto.id,
+                "username" to userDto.username,
+                "code" to userDto.code
             )
         )
         val refreshToken = jwt.createRefreshToken(
             claims = mapOf(
                 "user_id" to userDto.id,
+                "username" to userDto.username,
+                "code" to userDto.code
             )
         )
 
@@ -116,5 +123,15 @@ class DefaultAuthStore(
             refreshToken = refreshToken,
             user = userDto
         )
+    }
+
+    private suspend fun deleteToken(token: String) {
+        scope.async {
+            dbHelper.withDatabase { db ->
+                db.transaction {
+                    db.clossTokenQueries.deleteByToken(token)
+                }
+            }
+        }.await()
     }
 }

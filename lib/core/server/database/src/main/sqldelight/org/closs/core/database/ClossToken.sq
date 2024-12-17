@@ -31,3 +31,7 @@ RETURNING *;
 delete:
 DELETE FROM closs_token
 WHERE user_id = :id;
+
+deleteByToken:
+DELETE FROM closs_token
+WHERE user_id = :id;

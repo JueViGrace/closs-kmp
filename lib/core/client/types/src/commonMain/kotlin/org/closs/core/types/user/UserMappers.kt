@@ -6,6 +6,7 @@ import org.closs.core.types.aliases.DbUser
 fun UserDto.dtoToDomain(): User = User(
     id = id,
     username = username,
+    code = code,
     lastSync = lastSync,
     version = version,
     createdAt = createdAt,
@@ -15,7 +16,8 @@ fun UserDto.dtoToDomain(): User = User(
 fun User.domainToDb(): DbUser = DbUser(
     id = id,
     username = username,
-    ult_sinc = lastSync,
+    code = code,
+    last_sync = lastSync,
     version = version,
     created_at = createdAt,
     updated_at = updatedAt

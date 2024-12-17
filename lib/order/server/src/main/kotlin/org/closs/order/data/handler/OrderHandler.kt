@@ -17,7 +17,7 @@ interface OrderHandler {
     suspend fun getOrdersBySalesman(code: String): APIResponse<List<OrderDto>>
     suspend fun getAllOrdersByCustomer(code: String): APIResponse<List<OrderDto>>
     suspend fun getOrdersByCustomer(code: String): APIResponse<List<OrderDto>>
-    suspend fun createOrder(dto: CreateOrderDto): APIResponse<String>
+    suspend fun createOrder(dto: CreateOrderDto): APIResponse<OrderDto?>
 }
 
 class DefaultOrderHandler(
@@ -148,10 +148,15 @@ class DefaultOrderHandler(
         }
     }
 
-    override suspend fun createOrder(dto: CreateOrderDto): APIResponse<String> {
+    override suspend fun createOrder(dto: CreateOrderDto): APIResponse<OrderDto?> {
         return withContext(coroutineContext) {
-            ServerResponse.ok(
-                data = storage.createOrder(dto),
+            val result = storage.createOrder(dto)
+                ?: return@withContext ServerResponse.notFound(
+                    message = "Unable to create order, try again"
+                )
+
+            ServerResponse.created(
+                data = result,
                 message = "Processed successfully"
             )
         }

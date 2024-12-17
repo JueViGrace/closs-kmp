@@ -42,17 +42,17 @@ fun RequestValidationConfig.validateCreateOrderDto() {
                     if (detail.kmvNombre.isEmpty()) {
                         return@map ValidationResult.Invalid("Product name cannot be empty")
                     }
-                    if (detail.kmvCant.isEmpty()) {
-                        return@map ValidationResult.Invalid("Product quantity cannot be empty")
+                    if (detail.kmvCant < 0) {
+                        return@map ValidationResult.Invalid("Product quantity cannot be negative")
                     }
-                    if (detail.kmvArtprec.isEmpty()) {
-                        return@map ValidationResult.Invalid("Product price cannot be empty")
+                    if (detail.kmvArtprec < 0) {
+                        return@map ValidationResult.Invalid("Product price cannot be negative")
                     }
-                    if (detail.kmvStot.isEmpty()) {
-                        return@map ValidationResult.Invalid("Product total cannot be empty")
+                    if (detail.kmvStot < 0) {
+                        return@map ValidationResult.Invalid("Product total cannot be negative")
                     }
-                    if (detail.kmvDctolin.isEmpty()) {
-                        return@map ValidationResult.Invalid("Product discount cannot be empty")
+                    if (detail.kmvDctolin < 0) {
+                        return@map ValidationResult.Invalid("Product discount cannot be negative")
                     }
                     ValidationResult.Valid
                 }.firstOrNull { it is ValidationResult.Invalid } ?: ValidationResult.Valid

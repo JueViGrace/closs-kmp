@@ -19,7 +19,7 @@ interface OrderStorage {
     suspend fun getOrdersBySalesman(code: String): List<OrderDto>
     suspend fun getAllOrdersByCustomer(code: String): List<OrderDto>
     suspend fun getOrdersByCustomer(code: String): List<OrderDto>
-    suspend fun createOrder(dto: CreateOrderDto): String
+    suspend fun createOrder(dto: CreateOrderDto): OrderDto?
 }
 
 class DefaultOrderStorage(
@@ -104,26 +104,25 @@ class DefaultOrderStorage(
         }
     }
 
-    override suspend fun createOrder(dto: CreateOrderDto): String {
+    override suspend fun createOrder(dto: CreateOrderDto): OrderDto? {
         return scope.async {
             dbHelper.withDatabase { db ->
                 db.transactionWithResult {
-                    db.clossOrderQueries
+                    val dbOrder = db.clossOrderQueries
                         .insert(
                             closs_order = dto.dtoToDbOrder()
                         )
                         .executeAsOneOrNull()
-                        ?.dbOrderToDto()
-                        ?: rollback("Order creation failed")
+                        ?: rollback(null)
 
                     val list = dto.details.map { detail ->
                         db.clossOrderLinesQueries.insert(detail.toDbDetails()).executeAsOneOrNull()
                     }
                     if (list.contains(null)) {
-                        rollback("Order lines creation failed")
+                        rollback(null)
                     }
 
-                    return@transactionWithResult "Order creation successful"
+                    getOrder(dbOrder.kti_ndoc)
                 }
             }
         }.await()
