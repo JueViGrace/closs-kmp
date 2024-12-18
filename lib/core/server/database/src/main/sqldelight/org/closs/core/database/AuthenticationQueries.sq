@@ -1,0 +1,31 @@
+findOrderByCodeForSalesman:
+SELECT
+    closs_order.kti_ndoc
+FROM closs_order
+WHERE
+    closs_order.kti_ndoc = :doc AND
+   closs_order.kti_codven = :code;
+
+findOrderByCodeForManager:
+SELECT
+    closs_order.kti_ndoc
+FROM closs_order
+LEFT JOIN closs_salesman
+ON closs_order.kti_codven = closs_salesman.codigo
+LEFT JOIN closs_managers
+ON closs_salesman.supervpor = closs_managers.kng_codcoord
+WHERE
+    closs_order.kti_ndoc = :doc AND
+    closs_managers.kng_codgcia = :code;
+
+findSalesmanWithManager:
+SELECT
+    closs_salesman.codigo
+FROM closs_salesman
+LEFT JOIN closs_managers
+ON closs_salesman.supervpor = closs_managers.kng_codcoord
+WHERE
+    closs_managers.kng_codgcia = :manager AND
+    closs_salesman.codigo = :salesman AND
+    closs_salesman.status = 1;
+

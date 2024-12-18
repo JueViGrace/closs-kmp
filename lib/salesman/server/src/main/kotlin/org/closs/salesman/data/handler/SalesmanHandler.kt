@@ -13,7 +13,8 @@ import org.closs.salesman.data.store.SalesmanStore
 import kotlin.coroutines.CoroutineContext
 
 interface SalesmanHandler {
-    suspend fun getSalesmanByManager(manager: String): APIResponse<List<SalesmanDto>>
+    suspend fun getSalesmenByManager(manager: String): APIResponse<List<SalesmanDto>>
+    suspend fun getExistingSalesmenByManager(manager: String): APIResponse<List<SalesmanDto>>
     suspend fun getSalesmanByCode(code: String): APIResponse<SalesmanDto?>
     suspend fun getExistingSalesmanByCode(code: String): APIResponse<SalesmanDto?>
     suspend fun createSalesman(dto: CreateSalesmanDto): APIResponse<SalesmanDto?>
@@ -28,9 +29,26 @@ class DefaultSalesmanHandler(
     private val storage: SalesmanStore,
     private val coroutineContext: CoroutineContext
 ) : SalesmanHandler {
-    override suspend fun getSalesmanByManager(manager: String): APIResponse<List<SalesmanDto>> {
+    override suspend fun getSalesmenByManager(manager: String): APIResponse<List<SalesmanDto>> {
         return withContext(coroutineContext) {
-            val result = storage.getSalesmanByManager(manager)
+            val result = storage.getSalesmenByManager(manager)
+
+            if (result.isEmpty()) {
+                return@withContext ServerResponse.notFound(
+                    message = "Salesmen were not found"
+                )
+            }
+
+            ServerResponse.ok(
+                data = result,
+                message = "Processed successfully"
+            )
+        }
+    }
+
+    override suspend fun getExistingSalesmenByManager(manager: String): APIResponse<List<SalesmanDto>> {
+        return withContext(coroutineContext) {
+            val result = storage.getExistingSalesmenByManager(manager)
 
             if (result.isEmpty()) {
                 return@withContext ServerResponse.notFound(

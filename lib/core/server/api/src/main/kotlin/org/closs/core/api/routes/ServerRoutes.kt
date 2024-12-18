@@ -13,10 +13,10 @@ import org.closs.config.routes.configRoutes
 import org.closs.customer.routes.customerRoutes
 import org.closs.document.routes.documentRoutes
 import org.closs.manager.routes.managerRoutes
-import org.closs.order.routes.orderRoutes
-import org.closs.product.routes.productRoutes
-import org.closs.salesman.routes.salesmanRoutes
-import org.closs.user.routes.userRoutes
+import org.closs.order.routes.orderRouter
+import org.closs.product.routes.productRouter
+import org.closs.salesman.routes.salesmanRouter
+import org.closs.user.routes.userRouter
 
 fun Routing.serverRoutes() {
     route("/api") {
@@ -36,12 +36,12 @@ fun Route.apiRoutes() {
     authRoutes()
     companyRoutes()
     configRoutes()
-    userRoutes()
+    userRouter()
     managerRoutes()
-    salesmanRoutes()
+    salesmanRouter()
     customerRoutes()
-    productRoutes()
-    orderRoutes()
+    productRouter()
+    orderRouter()
     documentRoutes()
 }
 

@@ -17,7 +17,8 @@ import org.closs.core.types.salesman.toDb
 import org.closs.core.types.salesman.toDto
 
 interface SalesmanStore {
-    suspend fun getSalesmanByManager(manager: String): List<SalesmanDto>
+    suspend fun getSalesmenByManager(manager: String): List<SalesmanDto>
+    suspend fun getExistingSalesmenByManager(manager: String): List<SalesmanDto>
     suspend fun getSalesmanByCode(code: String): SalesmanDto?
     suspend fun getExistingSalesmanByCode(code: String): SalesmanDto?
     suspend fun createSalesman(dto: CreateSalesmanDto): SalesmanDto?
@@ -32,10 +33,20 @@ class DefaultSalesmanStore(
     private val scope: CoroutineScope,
     private val dbHelper: DbHelper
 ) : SalesmanStore {
-    override suspend fun getSalesmanByManager(manager: String): List<SalesmanDto> {
+    override suspend fun getSalesmenByManager(manager: String): List<SalesmanDto> {
         return dbHelper.withDatabase { db ->
             executeList(
                 query = db.clossSalesmanQueries.findSalesmenByManager(
+                    manager = manager,
+                ),
+            ).map { salesman -> salesman.salesmanByManagerToDto() }
+        }
+    }
+
+    override suspend fun getExistingSalesmenByManager(manager: String): List<SalesmanDto> {
+        return dbHelper.withDatabase { db ->
+            executeList(
+                query = db.clossSalesmanQueries.findExistingSalesmenByManager(
                     manager = manager,
                 ),
             ).map { salesman -> salesman.salesmanByManagerToDto() }

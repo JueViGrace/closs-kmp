@@ -7,8 +7,10 @@ import io.ktor.server.request.receive
 import kotlinx.serialization.json.Json
 import org.closs.core.shared.types.order.CreateOrderDto
 import org.closs.core.shared.types.order.OrderByIdDto
-import org.closs.core.shared.types.order.OrdersByUserDto
-import org.closs.core.types.OrderDataValidation
+import org.closs.core.shared.types.search.SearchByCustomerCodeDto
+import org.closs.core.shared.types.search.SearchByManagerCodeDto
+import org.closs.core.shared.types.search.SearchBySalesmanCodeDto
+import org.closs.core.types.Role
 import org.closs.core.types.UserIdValidation
 import org.closs.core.util.Jwt
 
@@ -16,7 +18,11 @@ fun AuthenticationConfig.ordersAuth(
     name: String,
     jwt: Jwt,
     userCall: suspend (String) -> UserIdValidation?,
-    orderCall: suspend (String) -> OrderDataValidation?
+    searchBySalesmanCall: suspend (UserIdValidation, String) -> Boolean,
+    searchByManagerCall: suspend (UserIdValidation, String) -> Boolean,
+    searchByCustomerCall: suspend (UserIdValidation, String) -> Boolean,
+    searchByIdCall: suspend (UserIdValidation, String) -> Boolean,
+    createOrderCall: suspend (UserIdValidation, CreateOrderDto) -> Boolean,
 ) {
     jwt(name = name) {
         realm = jwt.realm
@@ -29,25 +35,33 @@ fun AuthenticationConfig.ordersAuth(
 
                 val user: UserIdValidation = userCall(tokenId) ?: return@validateCredential null
 
-                if (user.isAdmin) {
+                if (user.role == Role.ADMIN) {
                     return@validateCredential JWTPrincipal(credential.payload)
                 }
 
                 when (val body: Any = Json.decodeFromString(receive<String>())) {
-                    is OrdersByUserDto -> {
-                        if (user.code != body.code) {
+                    is SearchBySalesmanCodeDto -> {
+                        if (!searchBySalesmanCall(user, body.code)) {
+                            return@validateCredential null
+                        }
+                    }
+                    is SearchByManagerCodeDto -> {
+                        if (!searchByManagerCall(user, body.manager)) {
+                            return@validateCredential null
+                        }
+                    }
+                    is SearchByCustomerCodeDto -> {
+                        if (!searchByCustomerCall(user, body.code)) {
                             return@validateCredential null
                         }
                     }
                     is OrderByIdDto -> {
-                        val order = orderCall(body.ktiNdoc) ?: return@validateCredential null
-                        if (user.code != order.salesman) {
+                        if (!searchByIdCall(user, body.ktiNdoc)) {
                             return@validateCredential null
                         }
                     }
-                    // todo: this blocks managers codes from doing orders for their salesmen
                     is CreateOrderDto -> {
-                        if (user.code != body.ktiCodven) {
+                        if (!createOrderCall(user, body)) {
                             return@validateCredential null
                         }
                     }

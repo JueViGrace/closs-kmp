@@ -1,48 +1,21 @@
-package org.closs.user.routes
+package org.closs.salesman.routes
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
-import io.ktor.server.routing.patch
 import io.ktor.server.routing.post
-import org.closs.core.shared.types.user.UpdateLastSyncDto
-import org.closs.core.shared.types.user.UserByIdDto
-import org.closs.core.shared.types.user.UserByUsernameDto
+import io.ktor.server.routing.put
+import org.closs.core.shared.types.search.SearchByManagerCodeDto
+import org.closs.core.shared.types.search.SearchBySalesmanCodeDto
+import org.closs.core.shared.types.salesman.CreateSalesmanDto
+import org.closs.core.shared.types.salesman.UpdateSalesmanDto
 import org.closs.core.types.applicationResponse
-import org.closs.user.data.handler.UserHandler
+import org.closs.salesman.data.handler.SalesmanHandler
 
-fun Route.getExistingUserByIdRoute(handler: UserHandler) {
-    post<UserByIdDto> { body ->
-        val response = handler.getExistingUserById(body.id)
-
-        call.applicationResponse(
-            response = response,
-            onFailure = { res ->
-                call.respond(
-                    status = HttpStatusCode(
-                        value = res.status,
-                        description = res.description,
-                    ),
-                    message = res
-                )
-            },
-            onSuccess = { res ->
-                call.respond(
-                    status = HttpStatusCode(
-                        value = res.status,
-                        description = res.description,
-                    ),
-                    message = res
-                )
-            }
-        )
-    }
-}
-
-fun Route.getExistingUserByUsernameRoute(handler: UserHandler) {
-    post<UserByUsernameDto> { body ->
-        val response = handler.getExistingUserByUsername(body.username)
+fun Route.getSalesmenByManager(handler: SalesmanHandler) {
+    post<SearchByManagerCodeDto> { dto ->
+        val response = handler.getSalesmenByManager(dto.manager)
 
         call.applicationResponse(
             response = response,
@@ -68,9 +41,65 @@ fun Route.getExistingUserByUsernameRoute(handler: UserHandler) {
     }
 }
 
-fun Route.updateLastSyncRoute(handler: UserHandler) {
-    patch<UpdateLastSyncDto> { body ->
-        val response = handler.updateLastSync(body)
+fun Route.getSalesmanByCode(handler: SalesmanHandler) {
+    post<SearchBySalesmanCodeDto> { dto ->
+        val response = handler.getSalesmanByCode(dto.code)
+
+        call.applicationResponse(
+            response = response,
+            onFailure = { res ->
+                call.respond(
+                    status = HttpStatusCode(
+                        value = res.status,
+                        description = res.description,
+                    ),
+                    message = res
+                )
+            },
+            onSuccess = { res ->
+                call.respond(
+                    status = HttpStatusCode(
+                        value = res.status,
+                        description = res.description,
+                    ),
+                    message = res
+                )
+            }
+        )
+    }
+}
+
+fun Route.createSalesman(handler: SalesmanHandler) {
+    post<CreateSalesmanDto> { dto ->
+        val response = handler.createSalesman(dto)
+
+        call.applicationResponse(
+            response = response,
+            onFailure = { res ->
+                call.respond(
+                    status = HttpStatusCode(
+                        value = res.status,
+                        description = res.description,
+                    ),
+                    message = res
+                )
+            },
+            onSuccess = { res ->
+                call.respond(
+                    status = HttpStatusCode(
+                        value = res.status,
+                        description = res.description,
+                    ),
+                    message = res
+                )
+            }
+        )
+    }
+}
+
+fun Route.updateSalesman(handler: SalesmanHandler) {
+    put<UpdateSalesmanDto> { dto ->
+        val response = handler.updateSalesman(dto)
 
         call.applicationResponse(
             response = response,

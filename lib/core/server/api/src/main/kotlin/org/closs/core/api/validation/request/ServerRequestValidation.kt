@@ -1,4 +1,4 @@
-package org.closs.core.api.validation
+package org.closs.core.api.validation.request
 
 import io.ktor.server.plugins.requestvalidation.RequestValidationConfig
 import org.closs.auth.validation.authValidation
