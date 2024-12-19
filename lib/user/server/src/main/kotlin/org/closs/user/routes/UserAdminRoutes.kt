@@ -2,18 +2,19 @@ package org.closs.user.routes
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
-import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.delete
 import io.ktor.server.routing.post
 import org.closs.core.shared.types.user.CreateUserDto
-import org.closs.core.shared.types.user.UserByIdDto
+import org.closs.core.types.APIResponse
+import org.closs.core.types.ServerResponse
 import org.closs.core.types.applicationResponse
+import org.closs.core.util.Util.validUuid
 import org.closs.user.data.handler.UserHandler
 
 fun Route.createUserRoute(handler: UserHandler) {
-    post<CreateUserDto> { dto ->
+    post<CreateUserDto>("/new") { dto ->
         val response = handler.createUser(dto)
 
         call.applicationResponse(
@@ -41,9 +42,16 @@ fun Route.createUserRoute(handler: UserHandler) {
 }
 
 fun Route.softDeleteUserRoute(handler: UserHandler) {
-    delete {
-        val body = call.receive<UserByIdDto>()
-        val response = handler.softDeleteUser(body.id)
+    delete("/{id}") {
+        val id = validUuid(call.parameters["id"])
+            ?: return@delete call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = ServerResponse.badRequest<String?>(
+                    message = "User id must be a valid id"
+                ) as APIResponse.Failure
+            )
+
+        val response = handler.softDeleteUser(id)
 
         call.applicationResponse(
             response = response,
@@ -70,9 +78,16 @@ fun Route.softDeleteUserRoute(handler: UserHandler) {
 }
 
 fun Route.deleteUserRoute(handler: UserHandler) {
-    delete("/forever") {
-        val body = call.receive<UserByIdDto>()
-        val response = handler.deleteUser(body.id)
+    delete("/forever/{id}") {
+        val id = validUuid(call.parameters["id"])
+            ?: return@delete call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = ServerResponse.badRequest<String?>(
+                    message = "User id must be a valid id"
+                ) as APIResponse.Failure
+            )
+
+        val response = handler.deleteUser(id)
 
         call.applicationResponse(
             response = response,

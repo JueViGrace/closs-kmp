@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.kotlinJvm)
+    alias(libs.plugins.kotlinx.serialization)
 }
 
 group = "org.closs.user"
@@ -24,7 +25,13 @@ dependencies {
     implementation(libs.ktor.server.core)
     implementation(libs.ktor.server.auth)
     implementation(libs.ktor.server.auth.jwt)
-    implementation(libs.ktor.server.request.validation)
+    implementation(libs.ktor.serialization.kotlinx.json)
+
+    // Serialization
+    implementation(libs.kotlinx.serialization.json)
+
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.core)
 
     // Koin
     implementation(libs.koin.core)

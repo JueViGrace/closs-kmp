@@ -4,11 +4,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async
 import org.closs.core.database.helper.DbHelper
 import org.closs.core.shared.types.salesman.CreateSalesmanDto
-import org.closs.core.shared.types.salesman.CreateSalesmanStatisticDto
+import org.closs.core.shared.types.salesman.statistics.CreateSalesmanStatisticDto
 import org.closs.core.shared.types.salesman.SalesmanDto
-import org.closs.core.shared.types.salesman.SalesmanStatisticsDto
+import org.closs.core.shared.types.salesman.statistics.SalesmanStatisticsDto
 import org.closs.core.shared.types.salesman.UpdateSalesmanDto
-import org.closs.core.shared.types.salesman.UpdateSalesmanStatisticDto
+import org.closs.core.shared.types.salesman.statistics.UpdateSalesmanStatisticDto
 import org.closs.core.types.salesman.createDtoToDbSalesman
 import org.closs.core.types.salesman.existingSalesmanByCodeToDto
 import org.closs.core.types.salesman.salesmanByCodeToDto

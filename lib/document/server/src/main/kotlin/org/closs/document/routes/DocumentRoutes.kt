@@ -5,7 +5,6 @@ import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
-import org.closs.core.shared.types.document.DocumentByCodeDto
 import org.closs.core.shared.types.search.SearchByCustomerCodeDto
 import org.closs.core.shared.types.search.SearchByManagerCodeDto
 import org.closs.core.shared.types.search.SearchBySalesmanCodeDto

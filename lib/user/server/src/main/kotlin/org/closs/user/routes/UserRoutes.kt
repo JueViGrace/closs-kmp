@@ -4,17 +4,26 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
 import io.ktor.server.routing.patch
-import io.ktor.server.routing.post
 import org.closs.core.shared.types.user.UpdateLastSyncDto
-import org.closs.core.shared.types.user.UserByIdDto
-import org.closs.core.shared.types.user.UserByUsernameDto
+import org.closs.core.types.APIResponse
+import org.closs.core.types.ServerResponse
 import org.closs.core.types.applicationResponse
+import org.closs.core.util.Util.validUuid
 import org.closs.user.data.handler.UserHandler
 
 fun Route.getExistingUserByIdRoute(handler: UserHandler) {
-    post<UserByIdDto> { body ->
-        val response = handler.getExistingUserById(body.id)
+    get("/{id}") {
+        val id = validUuid(call.parameters["id"])
+            ?: return@get call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = ServerResponse.badRequest<String?>(
+                    message = "User id must be a valid id"
+                ) as APIResponse.Failure
+            )
+
+        val response = handler.getExistingUserById(id)
 
         call.applicationResponse(
             response = response,
@@ -41,8 +50,15 @@ fun Route.getExistingUserByIdRoute(handler: UserHandler) {
 }
 
 fun Route.getExistingUserByUsernameRoute(handler: UserHandler) {
-    post<UserByUsernameDto> { body ->
-        val response = handler.getExistingUserByUsername(body.username)
+    get {
+        val username = call.request.queryParameters["username"]
+            ?: return@get call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = ServerResponse.badRequest<String?>(
+                    message = "Username must be provided"
+                )
+            )
+        val response = handler.getExistingUserByUsername(username)
 
         call.applicationResponse(
             response = response,

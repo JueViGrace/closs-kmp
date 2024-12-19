@@ -85,7 +85,7 @@ object ServerResponse {
             APIResponse.Failure(
                 status = HttpStatusCode.BadRequest.value,
                 description = HttpStatusCode.BadRequest.description,
-                data = data,
+                data = null,
                 message = message
             )
         }
@@ -119,7 +119,7 @@ object ServerResponse {
             APIResponse.Failure(
                 status = HttpStatusCode.NotFound.value,
                 description = HttpStatusCode.NotFound.description,
-                data = data,
+                data = null,
                 message = message
             )
         }

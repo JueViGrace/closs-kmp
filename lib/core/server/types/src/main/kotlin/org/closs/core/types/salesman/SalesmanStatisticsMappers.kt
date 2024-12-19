@@ -1,8 +1,8 @@
 package org.closs.core.types.salesman
 
 import org.closs.core.shared.types.Constants
-import org.closs.core.shared.types.salesman.CreateSalesmanStatisticDto
-import org.closs.core.shared.types.salesman.SalesmanStatisticsDto
+import org.closs.core.shared.types.salesman.statistics.CreateSalesmanStatisticDto
+import org.closs.core.shared.types.salesman.statistics.SalesmanStatisticsDto
 import org.closs.core.types.aliases.DbSalesmanStatistics
 
 fun DbSalesmanStatistics.toDto(): SalesmanStatisticsDto = SalesmanStatisticsDto(

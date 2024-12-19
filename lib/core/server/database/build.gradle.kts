@@ -27,6 +27,8 @@ sqldelight {
         create("ClossSvDb") {
             packageName.set("org.closs.core.database")
             dialect(libs.sqldelight.sqlite.dialect)
+            schemaOutputDirectory.set(file("src/main/sqldelight/databases"))
+            verifyMigrations.set(true)
             generateAsync.set(true)
         }
         // If server needs Pg database uncomment

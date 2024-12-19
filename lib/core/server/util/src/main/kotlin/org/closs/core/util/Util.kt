@@ -20,12 +20,14 @@ object Util {
     }
 
     @OptIn(ExperimentalUuidApi::class)
-    fun validUuid(id: String): Boolean {
-        return try {
-            Uuid.parse(id)
-            true
-        } catch (e: IllegalStateException) {
-            false
+    fun validUuid(id: String?): String? {
+        return id?.let { value ->
+            try {
+                Uuid.parse(value).toHexString()
+            } catch (e: IllegalStateException) {
+                println(e.message)
+                null
+            }
         }
     }
 }

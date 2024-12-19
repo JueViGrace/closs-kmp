@@ -8,7 +8,6 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.put
 import org.closs.core.shared.types.product.CreateProductDto
-import org.closs.core.shared.types.product.ProductByIdDto
 import org.closs.core.shared.types.product.UpdateProductDto
 import org.closs.core.types.applicationResponse
 import org.closs.product.data.handler.ProductHandler

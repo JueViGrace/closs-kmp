@@ -3,7 +3,7 @@ package org.closs.server.config
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.auth.Authentication
-import org.closs.core.api.validation.authentication.serverAuthValidation
+import org.closs.core.validation.authentication.serverAuthValidation
 import org.closs.core.database.helper.DbHelper
 import org.closs.core.util.Jwt
 import org.koin.core.parameter.parametersOf

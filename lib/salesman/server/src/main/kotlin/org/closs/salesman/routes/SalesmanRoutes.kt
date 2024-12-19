@@ -4,15 +4,23 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
-import io.ktor.server.routing.post
-import org.closs.core.shared.types.search.SearchByManagerCodeDto
-import org.closs.core.shared.types.search.SearchBySalesmanCodeDto
+import io.ktor.server.routing.get
+import org.closs.core.types.ServerResponse
 import org.closs.core.types.applicationResponse
 import org.closs.salesman.data.handler.SalesmanHandler
+import org.koin.ktor.ext.get
 
 fun Route.getExistingSalesmenByManager(handler: SalesmanHandler) {
-    post<SearchByManagerCodeDto> { dto ->
-        val response = handler.getExistingSalesmenByManager(dto.manager)
+    get("/manager/{manager}") {
+        val manager = call.parameters["manager"]
+            ?: return@get call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = ServerResponse.badRequest<String?>(
+                    message = "Manager must be provided"
+                )
+            )
+
+        val response = handler.getExistingSalesmenByManager(manager)
 
         call.applicationResponse(
             response = response,
@@ -39,8 +47,16 @@ fun Route.getExistingSalesmenByManager(handler: SalesmanHandler) {
 }
 
 fun Route.getExistingSalesmanByCode(handler: SalesmanHandler) {
-    post<SearchBySalesmanCodeDto> { dto ->
-        val response = handler.getExistingSalesmenByManager(dto.code)
+    get {
+        val code = call.parameters["code"]
+            ?: return@get call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = ServerResponse.badRequest<String?>(
+                    message = "Salesman must be provided"
+                )
+            )
+
+        val response = handler.getExistingSalesmenByManager(code)
 
         call.applicationResponse(
             response = response,

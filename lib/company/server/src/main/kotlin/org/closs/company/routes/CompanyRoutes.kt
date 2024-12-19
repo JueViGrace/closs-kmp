@@ -6,7 +6,6 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import org.closs.company.data.handler.CompanyHandler
-import org.closs.core.shared.types.company.CompanyByCodeDto
 import org.closs.core.types.applicationResponse
 
 fun Route.getCompanyByCode(handler: CompanyHandler) {

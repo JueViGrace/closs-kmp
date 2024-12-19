@@ -23,6 +23,9 @@ dependencies {
     // Util: server
     implementation(projects.lib.core.server.util)
 
+    // Validation: server
+    implementation(projects.lib.core.server.validation)
+
     // Database: server
     implementation(projects.lib.core.server.database)
 

@@ -6,7 +6,6 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 import org.closs.core.shared.types.manager.CreateManagerDto
-import org.closs.core.shared.types.manager.ManagerByCodeDto
 import org.closs.core.types.applicationResponse
 import org.closs.manager.data.handler.ManagerHandler
 
