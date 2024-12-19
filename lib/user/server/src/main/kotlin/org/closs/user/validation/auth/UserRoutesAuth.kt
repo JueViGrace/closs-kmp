@@ -8,16 +8,16 @@ import kotlinx.serialization.json.Json
 import org.closs.core.shared.types.user.UpdateLastSyncDto
 import org.closs.core.shared.types.user.UserByIdDto
 import org.closs.core.shared.types.user.UserByUsernameDto
+import org.closs.core.types.JwtAuthName
 import org.closs.core.types.Role
 import org.closs.core.types.UserIdValidation
 import org.closs.core.util.Jwt
 
 fun AuthenticationConfig.userRoutesAuth(
-    name: String,
     jwt: Jwt,
     userCall: suspend (String) -> UserIdValidation?
 ) {
-    jwt(name = name) {
+    jwt(name = JwtAuthName.USER_ROUTES.value) {
         realm = jwt.realm
 
         verifier(jwt.jwtVerifier)
@@ -34,23 +34,23 @@ fun AuthenticationConfig.userRoutesAuth(
 
                 when (val body: Any = Json.decodeFromString(receive<String>())) {
                     is UserByIdDto -> {
-                        if (user.userId != body.id) {
-                            return@validateCredential null
+                        if (user.userId == body.id) {
+                            return@validateCredential JWTPrincipal(credential.payload)
                         }
                     }
                     is UpdateLastSyncDto -> {
-                        if (body.id != user.userId) {
-                            return@validateCredential null
+                        if (body.id == user.userId) {
+                            return@validateCredential JWTPrincipal(credential.payload)
                         }
                     }
                     is UserByUsernameDto -> {
-                        if (user.username != body.username) {
-                            return@validateCredential null
+                        if (user.username == body.username) {
+                            return@validateCredential JWTPrincipal(credential.payload)
                         }
                     }
+                    else -> return@validateCredential null
                 }
-
-                JWTPrincipal(credential.payload)
+                null
             }
         }
     }

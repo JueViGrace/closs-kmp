@@ -4,9 +4,9 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ManagerByCode(
-    @SerialName("gerencia")
+data class ManagerByCodeDto(
+    @SerialName("manager")
     val manager: String,
-    @SerialName("codigo")
+    @SerialName("code")
     val code: String,
 )

@@ -4,14 +4,14 @@ import io.ktor.server.auth.AuthenticationConfig
 import io.ktor.server.auth.jwt.JWTPrincipal
 import io.ktor.server.auth.jwt.jwt
 import org.closs.core.database.helper.DbHelper
+import org.closs.core.types.JwtAuthName
 import org.closs.core.util.Jwt
 
 fun AuthenticationConfig.sessionAuth(
-    name: String,
     jwt: Jwt,
     dbHelper: DbHelper
 ) {
-    jwt(name = name) {
+    jwt(name = JwtAuthName.SESSION.value) {
         realm = jwt.realm
 
         verifier(jwt.jwtVerifier)
@@ -23,7 +23,6 @@ fun AuthenticationConfig.sessionAuth(
                         executeOne(db.clossTokenQueries.findTokenById(id))
                     }
                 } ?: return@validateCredential null
-
                 JWTPrincipal(credential.payload)
             }
         }

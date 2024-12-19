@@ -1,25 +1,38 @@
 package org.closs.manager.routes
 
-import io.ktor.server.auth.AuthenticationStrategy
-import io.ktor.server.auth.authenticate
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.application.call
+import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
-import io.ktor.server.routing.route
-import org.closs.core.shared.types.manager.CreateManagerDto
-import org.closs.core.types.JwtAuthName
+import org.closs.core.shared.types.search.SearchByManagerCodeDto
+import org.closs.core.types.applicationResponse
 import org.closs.manager.data.handler.ManagerHandler
-import org.koin.ktor.ext.inject
 
-fun Route.managerRoutes() {
-    val handler: ManagerHandler by inject()
+fun Route.getManagersByCode(handler: ManagerHandler) {
+    post<SearchByManagerCodeDto> { dto ->
+        val response = handler.getManagersByCode(dto.manager)
 
-    route("/manager") {
-        authenticate(JwtAuthName.ADMIN.value, strategy = AuthenticationStrategy.Required) {
-            route("/admin") {
-                post<CreateManagerDto> {
-
-                }
+        call.applicationResponse(
+            response = response,
+            onFailure = { res ->
+                call.respond(
+                    status = HttpStatusCode(
+                        value = res.status,
+                        description = res.description
+                    ),
+                    message = res
+                )
+            },
+            onSuccess = { res ->
+                call.respond(
+                    status = HttpStatusCode(
+                        value = res.status,
+                        description = res.description
+                    ),
+                    message = res
+                )
             }
-        }
+        )
     }
 }

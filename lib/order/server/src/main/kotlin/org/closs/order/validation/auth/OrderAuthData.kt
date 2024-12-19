@@ -47,8 +47,7 @@ suspend fun createOrderData(user: UserIdValidation, dto: CreateOrderDto, dbHelpe
                         code = dto.ktiCodcli
                     )
                 )
-            }
-                ?: return false
+            } ?: return false
 
             when {
                 customer.vendedor != user.code -> false
@@ -72,8 +71,7 @@ suspend fun createOrderData(user: UserIdValidation, dto: CreateOrderDto, dbHelpe
                         code = dto.ktiCodcli
                     )
                 )
-            }
-                ?: return false
+            } ?: return false
 
             when {
                 customer.vendedor != salesmanCode -> false

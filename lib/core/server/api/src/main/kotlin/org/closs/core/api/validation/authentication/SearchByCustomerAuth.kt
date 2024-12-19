@@ -30,6 +30,6 @@ suspend fun searchByCustomerData(
                 )
             } != null
         }
-        else -> true
+        else -> false
     }
 }

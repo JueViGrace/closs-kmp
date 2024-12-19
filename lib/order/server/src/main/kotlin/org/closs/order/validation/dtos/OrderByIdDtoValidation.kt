@@ -1,4 +1,4 @@
-package org.closs.order.validation
+package org.closs.order.validation.dtos
 
 import io.ktor.server.plugins.requestvalidation.RequestValidationConfig
 import io.ktor.server.plugins.requestvalidation.ValidationResult

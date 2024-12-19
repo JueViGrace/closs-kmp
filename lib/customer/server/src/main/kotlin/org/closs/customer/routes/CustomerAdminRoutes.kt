@@ -1,21 +1,21 @@
-package org.closs.company.routes
+package org.closs.customer.routes
 
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
-import org.closs.company.data.handler.CompanyHandler
-import org.closs.core.shared.types.company.CompanyByCodeDto
+import org.closs.core.shared.types.customer.CreateCustomerDto
 import org.closs.core.types.applicationResponse
+import org.closs.customer.data.handler.CustomerHandler
 
-fun Route.getCompanyByCode(handler: CompanyHandler) {
-    post<CompanyByCodeDto> { dto ->
-        val response = handler.getCompanyByCode(dto.code)
+fun Route.createCustomer(handler: CustomerHandler) {
+    post<CreateCustomerDto> { dto ->
+        val response = handler.createCustomer(dto)
 
         call.applicationResponse(
             response = response,
-            onSuccess = { res ->
+            onFailure = { res ->
                 call.respond(
                     status = HttpStatusCode(
                         value = res.status,
@@ -24,7 +24,7 @@ fun Route.getCompanyByCode(handler: CompanyHandler) {
                     message = res
                 )
             },
-            onFailure = { res ->
+            onSuccess = { res ->
                 call.respond(
                     status = HttpStatusCode(
                         value = res.status,
