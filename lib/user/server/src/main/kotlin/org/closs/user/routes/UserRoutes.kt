@@ -13,9 +13,9 @@ import org.closs.core.types.applicationResponse
 import org.closs.core.util.Util.validUuid
 import org.closs.user.data.handler.UserHandler
 
-fun Route.getExistingUserByIdRoute(handler: UserHandler) {
-    get("/{id}") {
-        val id = validUuid(call.parameters["id"])
+fun Route.getExistingUserById(handler: UserHandler) {
+    get("/{user}") {
+        val id = validUuid(call.parameters["user"])
             ?: return@get call.respond(
                 status = HttpStatusCode.BadRequest,
                 message = ServerResponse.badRequest<String?>(
@@ -49,9 +49,9 @@ fun Route.getExistingUserByIdRoute(handler: UserHandler) {
     }
 }
 
-fun Route.getExistingUserByUsernameRoute(handler: UserHandler) {
+fun Route.getExistingUserByUsername(handler: UserHandler) {
     get {
-        val username = call.request.queryParameters["username"]
+        val username = call.request.queryParameters["user"]
             ?: return@get call.respond(
                 status = HttpStatusCode.BadRequest,
                 message = ServerResponse.badRequest<String?>(
@@ -84,7 +84,7 @@ fun Route.getExistingUserByUsernameRoute(handler: UserHandler) {
     }
 }
 
-fun Route.updateLastSyncRoute(handler: UserHandler) {
+fun Route.updateLastSync(handler: UserHandler) {
     patch<UpdateLastSyncDto> { body ->
         val response = handler.updateLastSync(body)
 

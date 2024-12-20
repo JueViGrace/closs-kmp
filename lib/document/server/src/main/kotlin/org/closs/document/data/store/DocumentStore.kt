@@ -12,7 +12,6 @@ import org.closs.core.types.document.withLinesToDto
 
 interface DocumentStore {
     suspend fun getDocument(doc: String): DocumentDto?
-    suspend fun getDocumentWithLines(doc: String): DocumentDto?
     suspend fun getDocumentsByManager(manager: String): List<DocumentDto>
     suspend fun getDocumentsBySalesman(code: String): List<DocumentDto>
     suspend fun getDocumentsByCustomer(code: String): List<DocumentDto>
@@ -24,14 +23,6 @@ class DefaultDocumentStore(
     private val scope: CoroutineScope
 ) : DocumentStore {
     override suspend fun getDocument(doc: String): DocumentDto? {
-        return dbHelper.withDatabase { db ->
-            executeOne(
-                query = db.clossDocumentQueries.findDocument(doc)
-            )?.toDto()
-        }
-    }
-
-    override suspend fun getDocumentWithLines(doc: String): DocumentDto? {
         return dbHelper.withDatabase { db ->
             executeList(
                 query = db.clossDocumentQueries.findDocumentWithLines(doc)

@@ -18,7 +18,7 @@ WHERE
     closs_order.kti_ndoc = :doc AND
     closs_managers.kng_codgcia = :code;
 
-findSalesmanWithManager:
+findSalesmanForManager:
 SELECT
     closs_salesman.codigo
 FROM closs_salesman

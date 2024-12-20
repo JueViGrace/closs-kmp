@@ -6,6 +6,9 @@ plugins {
 group = "org.closs.core.database"
 
 dependencies {
+    // Kbcrypt
+    implementation(libs.kbcrypt)
+
     // Coroutines
     implementation(libs.kotlinx.coroutines.core)
 

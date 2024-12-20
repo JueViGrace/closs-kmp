@@ -5,9 +5,6 @@ import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
-import io.ktor.server.routing.post
-import org.closs.core.shared.types.search.SearchByManagerCodeDto
-import org.closs.core.shared.types.search.SearchBySalesmanCodeDto
 import org.closs.core.types.ServerResponse
 import org.closs.core.types.applicationResponse
 import org.closs.salesman.data.handler.SalesmanHandler
@@ -49,8 +46,8 @@ fun Route.getStatisticsByManager(handler: SalesmanHandler) {
 }
 
 fun Route.getStatisticsBySalesman(handler: SalesmanHandler) {
-    get("/salesman/{code}") {
-        val code = call.parameters["code"]
+    get("/{salesman}") {
+        val code = call.parameters["salesman"]
             ?: return@get call.respond(
                 status = HttpStatusCode.BadRequest,
                 message = ServerResponse.badRequest<String?>(

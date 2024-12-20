@@ -7,7 +7,7 @@ import org.closs.core.database.ClossCliDb
 
 actual class DriverFactory {
     actual suspend fun createDriver(): SqlDriver {
-        val driver = JdbcSqliteDriver("jdbc:sqlite:bakery.db")
+        val driver = JdbcSqliteDriver("jdbc:sqlite:closs.db")
         ClossCliDb.Schema.awaitCreate(driver)
         return driver
     }

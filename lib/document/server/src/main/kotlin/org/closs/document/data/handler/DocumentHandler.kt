@@ -10,7 +10,6 @@ import kotlin.coroutines.CoroutineContext
 
 interface DocumentHandler {
     suspend fun getDocument(doc: String): APIResponse<DocumentDto?>
-    suspend fun getDocumentWithLines(doc: String): APIResponse<DocumentDto?>
     suspend fun getDocumentsByManager(manager: String): APIResponse<List<DocumentDto>>
     suspend fun getDocumentsBySalesman(code: String): APIResponse<List<DocumentDto>>
     suspend fun getDocumentsByCustomer(code: String): APIResponse<List<DocumentDto>>
@@ -24,20 +23,6 @@ class DefaultDocumentHandler(
     override suspend fun getDocument(doc: String): APIResponse<DocumentDto?> {
         return withContext(coroutineContext) {
             val result = storage.getDocument(doc)
-                ?: return@withContext ServerResponse.notFound(
-                    message = "Document with code $doc was not found"
-                )
-
-            ServerResponse.ok(
-                data = result,
-                message = "Processed successfully"
-            )
-        }
-    }
-
-    override suspend fun getDocumentWithLines(doc: String): APIResponse<DocumentDto?> {
-        return withContext(coroutineContext) {
-            val result = storage.getDocumentWithLines(doc)
                 ?: return@withContext ServerResponse.notFound(
                     message = "Document with code $doc was not found"
                 )

@@ -7,12 +7,11 @@ import org.closs.core.shared.types.order.CreateOrderDto
 import org.closs.core.shared.types.order.OrderDto
 import org.closs.core.types.order.dbOrderToDto
 import org.closs.core.types.order.dtoToDbOrder
-import org.closs.core.types.order.orderLinesToDto
+import org.closs.core.types.order.orderWithLinesToDto
 import org.closs.core.types.order.toDbDetails
 
 interface OrderStorage {
     suspend fun getOrder(doc: String): OrderDto?
-    suspend fun getOrderWithLines(doc: String): OrderDto?
     suspend fun getAllOrdersByManager(code: String): List<OrderDto>
     suspend fun getOrdersByManager(code: String): List<OrderDto>
     suspend fun getAllOrdersBySalesman(code: String): List<OrderDto>
@@ -28,19 +27,9 @@ class DefaultOrderStorage(
 ) : OrderStorage {
     override suspend fun getOrder(doc: String): OrderDto? {
         return dbHelper.withDatabase { db ->
-            executeOne(
-                query = db.clossOrderQueries.findOrder(
-                    doc = doc
-                )
-            )?.dbOrderToDto()
-        }
-    }
-
-    override suspend fun getOrderWithLines(doc: String): OrderDto? {
-        return dbHelper.withDatabase { db ->
             executeList(
                 query = db.clossOrderQueries.findOrderWithLines(doc)
-            ).orderLinesToDto()
+            ).orderWithLinesToDto()
         }
     }
 

@@ -9,6 +9,7 @@ import io.ktor.server.routing.post
 import io.ktor.server.routing.put
 import org.closs.core.shared.types.product.CreateProductDto
 import org.closs.core.shared.types.product.UpdateProductDto
+import org.closs.core.types.ServerResponse
 import org.closs.core.types.applicationResponse
 import org.closs.product.data.handler.ProductHandler
 
@@ -41,8 +42,15 @@ fun Route.getProducts(handler: ProductHandler) {
 }
 
 fun Route.getProductByCode(handler: ProductHandler) {
-    post<ProductByIdDto> { body ->
-        val response = handler.getProductByCode(body.id)
+    get("/{code}") {
+        val code = call.parameters["code"]
+            ?: return@get call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = ServerResponse.badRequest<String?>(
+                    message = "Product code must be provided"
+                )
+            )
+        val response = handler.getProductByCode(code)
 
         call.applicationResponse(
             response = response,

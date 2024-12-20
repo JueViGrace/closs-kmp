@@ -4,44 +4,21 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
-import io.ktor.server.routing.post
-import org.closs.core.shared.types.search.SearchByCustomerCodeDto
-import org.closs.core.shared.types.search.SearchByManagerCodeDto
-import org.closs.core.shared.types.search.SearchBySalesmanCodeDto
+import io.ktor.server.routing.get
+import org.closs.core.types.ServerResponse
 import org.closs.core.types.applicationResponse
 import org.closs.document.data.handler.DocumentHandler
 
 fun Route.getDocument(handler: DocumentHandler) {
-    post<DocumentByCodeDto> { dto ->
-        val response = handler.getDocument(dto.document)
-
-        call.applicationResponse(
-            response = response,
-            onFailure = { res ->
-                call.respond(
-                    status = HttpStatusCode(
-                        value = res.status,
-                        description = res.description
-                    ),
-                    message = res
+    get("/{document}") {
+        val document = call.parameters["document"]
+            ?: return@get call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = ServerResponse.badRequest<String?>(
+                    message = "Document is required"
                 )
-            },
-            onSuccess = { res ->
-                call.respond(
-                    status = HttpStatusCode(
-                        value = res.status,
-                        description = res.description
-                    ),
-                    message = res
-                )
-            }
-        )
-    }
-}
-
-fun Route.getDocumentWithLines(handler: DocumentHandler) {
-    post<DocumentByCodeDto> { dto ->
-        val response = handler.getDocumentWithLines(dto.document)
+            )
+        val response = handler.getDocument(document)
 
         call.applicationResponse(
             response = response,
@@ -68,8 +45,15 @@ fun Route.getDocumentWithLines(handler: DocumentHandler) {
 }
 
 fun Route.getDocumentsByManager(handler: DocumentHandler) {
-    post<SearchByManagerCodeDto> { dto ->
-        val response = handler.getDocumentsByManager(dto.manager)
+    get {
+        val manager = call.request.queryParameters["manager"]
+            ?: return@get call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = ServerResponse.badRequest<String?>(
+                    message = "Manager code is required"
+                )
+            )
+        val response = handler.getDocumentsByManager(manager)
 
         call.applicationResponse(
             response = response,
@@ -96,8 +80,15 @@ fun Route.getDocumentsByManager(handler: DocumentHandler) {
 }
 
 fun Route.getDocumentsBySalesman(handler: DocumentHandler) {
-    post<SearchBySalesmanCodeDto> { dto ->
-        val response = handler.getDocumentsBySalesman(dto.code)
+    get {
+        val salesman = call.request.queryParameters["salesman"]
+            ?: return@get call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = ServerResponse.badRequest<String?>(
+                    message = "Manager code is required"
+                )
+            )
+        val response = handler.getDocumentsByManager(salesman)
 
         call.applicationResponse(
             response = response,
@@ -124,8 +115,15 @@ fun Route.getDocumentsBySalesman(handler: DocumentHandler) {
 }
 
 fun Route.getDocumentsByCustomer(handler: DocumentHandler) {
-    post<SearchByCustomerCodeDto> { dto ->
-        val response = handler.getDocumentsByCustomer(dto.code)
+    get {
+        val customer = call.request.queryParameters["customer"]
+            ?: return@get call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = ServerResponse.badRequest<String?>(
+                    message = "Manager code is required"
+                )
+            )
+        val response = handler.getDocumentsByManager(customer)
 
         call.applicationResponse(
             response = response,

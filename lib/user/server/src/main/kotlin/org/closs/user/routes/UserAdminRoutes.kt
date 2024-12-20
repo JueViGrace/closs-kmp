@@ -13,7 +13,7 @@ import org.closs.core.types.applicationResponse
 import org.closs.core.util.Util.validUuid
 import org.closs.user.data.handler.UserHandler
 
-fun Route.createUserRoute(handler: UserHandler) {
+fun Route.createUser(handler: UserHandler) {
     post<CreateUserDto>("/new") { dto ->
         val response = handler.createUser(dto)
 
@@ -41,7 +41,7 @@ fun Route.createUserRoute(handler: UserHandler) {
     }
 }
 
-fun Route.softDeleteUserRoute(handler: UserHandler) {
+fun Route.softDeleteUser(handler: UserHandler) {
     delete("/{id}") {
         val id = validUuid(call.parameters["id"])
             ?: return@delete call.respond(
@@ -77,7 +77,7 @@ fun Route.softDeleteUserRoute(handler: UserHandler) {
     }
 }
 
-fun Route.deleteUserRoute(handler: UserHandler) {
+fun Route.deleteUser(handler: UserHandler) {
     delete("/forever/{id}") {
         val id = validUuid(call.parameters["id"])
             ?: return@delete call.respond(

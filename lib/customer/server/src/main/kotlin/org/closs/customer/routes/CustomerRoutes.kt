@@ -4,16 +4,21 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
-import io.ktor.server.routing.post
-import org.closs.core.shared.types.search.SearchByCustomerCodeDto
-import org.closs.core.shared.types.search.SearchByManagerCodeDto
-import org.closs.core.shared.types.search.SearchBySalesmanCodeDto
+import io.ktor.server.routing.get
+import org.closs.core.types.ServerResponse
 import org.closs.core.types.applicationResponse
 import org.closs.customer.data.handler.CustomerHandler
 
 fun Route.getCustomerByCode(handler: CustomerHandler) {
-    post<SearchByCustomerCodeDto> { dto ->
-        val response = handler.getCustomerByCode(dto.code)
+    get("/{customer}") {
+        val code = call.parameters["customer"]
+            ?: return@get call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = ServerResponse.badRequest<String?>(
+                    message = "Customer code is required"
+                )
+            )
+        val response = handler.getCustomerByCode(code)
 
         call.applicationResponse(
             response = response,
@@ -40,8 +45,16 @@ fun Route.getCustomerByCode(handler: CustomerHandler) {
 }
 
 fun Route.getCustomersByManager(handler: CustomerHandler) {
-    post<SearchByManagerCodeDto> { dto ->
-        val response = handler.getCustomersByManager(dto.manager)
+    get {
+        val manager = call.request.queryParameters["manager"]
+            ?: return@get call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = ServerResponse.badRequest<String?>(
+                    message = "Manager code is required"
+                )
+            )
+
+        val response = handler.getCustomersByManager(manager)
 
         call.applicationResponse(
             response = response,
@@ -68,8 +81,16 @@ fun Route.getCustomersByManager(handler: CustomerHandler) {
 }
 
 fun Route.getCustomersBySalesman(handler: CustomerHandler) {
-    post<SearchBySalesmanCodeDto> { dto ->
-        val response = handler.getCustomersBySalesman(dto.code)
+    get {
+        val salesman = call.request.queryParameters["salesman"]
+            ?: return@get call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = ServerResponse.badRequest<String?>(
+                    message = "Manager code is required"
+                )
+            )
+
+        val response = handler.getCustomersBySalesman(salesman)
 
         call.applicationResponse(
             response = response,

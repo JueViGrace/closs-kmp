@@ -1,5 +1,6 @@
 package org.closs.core.util
 
+import org.closs.core.types.Role
 import java.util.regex.Pattern
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -28,6 +29,16 @@ object Util {
                 println(e.message)
                 null
             }
+        }
+    }
+
+    fun verifyUserRole(role: String): Role {
+        return when (val value = Role.valueOf(role)) {
+            Role.CUSTOMER -> value
+            Role.SALESMAN -> value
+            Role.MANAGER -> value
+            Role.ADMIN -> value
+            else -> Role.UNIDENTIFIED
         }
     }
 }

@@ -34,7 +34,7 @@ fun DbOrder.dbOrderToDto(): OrderDto = OrderDto(
 
 // todo: this should be done in other way
 
-fun List<OrderWithLines>.orderLinesToDto(): OrderDto? {
+fun List<OrderWithLines>.orderWithLinesToDto(): OrderDto? {
     val group: Map<OrderDto, List<OrderWithLines>> = this.groupBy { row ->
         OrderDto(
             ktiNdoc = row.kti_ndoc,

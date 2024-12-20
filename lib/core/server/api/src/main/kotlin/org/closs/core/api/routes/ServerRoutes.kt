@@ -7,7 +7,7 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.Routing
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
-import org.closs.auth.routes.authRoutes
+import org.closs.auth.routes.authRouter
 import org.closs.company.routes.companyRouter
 import org.closs.config.routes.configRouter
 import org.closs.customer.routes.customerRouter
@@ -33,7 +33,7 @@ fun Route.apiRoutes() {
         )
     }
 
-    authRoutes()
+    authRouter()
     companyRouter()
 //    authenticate(
 //        JwtAuthName.SESSION.value,

@@ -4,45 +4,24 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.call
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
 import io.ktor.server.routing.post
+import org.closs.core.types.FilterOptions
 import org.closs.core.shared.types.order.CreateOrderDto
-import org.closs.core.shared.types.search.SearchByCustomerCodeDto
-import org.closs.core.shared.types.search.SearchByManagerCodeDto
-import org.closs.core.shared.types.search.SearchBySalesmanCodeDto
+import org.closs.core.types.ServerResponse
 import org.closs.core.types.applicationResponse
 import org.closs.order.data.handler.OrderHandler
 
 fun Route.getOrder(handler: OrderHandler) {
-    post<OrderByIdDto> { dto ->
-        val response = handler.getOrder(dto.ktiNdoc)
-
-        call.applicationResponse(
-            response = response,
-            onFailure = { res ->
-                call.respond(
-                    status = HttpStatusCode(
-                        value = res.status,
-                        description = res.description
-                    ),
-                    message = res
+    get("/{document}") {
+        val document = call.parameters["document"]
+            ?: return@get call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = ServerResponse.badRequest<String?>(
+                    message = "Document code is required"
                 )
-            },
-            onSuccess = { res ->
-                call.respond(
-                    status = HttpStatusCode(
-                        value = res.status,
-                        description = res.description
-                    ),
-                    message = res
-                )
-            }
-        )
-    }
-}
-
-fun Route.getOrderWithLines(handler: OrderHandler) {
-    post<OrderByIdDto> { dto ->
-        val response = handler.getOrderWithLines(dto.ktiNdoc)
+            )
+        val response = handler.getOrder(document)
 
         call.applicationResponse(
             response = response,
@@ -69,8 +48,15 @@ fun Route.getOrderWithLines(handler: OrderHandler) {
 }
 
 fun Route.getAllOrdersByManager(handler: OrderHandler) {
-    post<SearchByManagerCodeDto> { dto ->
-        val response = handler.getAllOrdersByManager(dto.manager)
+    get {
+        val manager = call.request.queryParameters["manager"]
+            ?: return@get call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = ServerResponse.badRequest<String?>(
+                    message = "Manager code must be provided"
+                )
+            )
+        val response = handler.getAllOrdersByManager(manager)
 
         call.applicationResponse(
             response = response,
@@ -97,36 +83,26 @@ fun Route.getAllOrdersByManager(handler: OrderHandler) {
 }
 
 fun Route.getOrdersByManager(handler: OrderHandler) {
-    post<SearchByManagerCodeDto> { dto ->
-        val response = handler.getOrdersByManager(dto.manager)
-
-        call.applicationResponse(
-            response = response,
-            onFailure = { res ->
-                call.respond(
-                    status = HttpStatusCode(
-                        value = res.status,
-                        description = res.description
-                    ),
-                    message = res
+    get {
+        val manager = call.request.queryParameters["manager"]
+            ?: return@get call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = ServerResponse.badRequest<String?>(
+                    message = "Manager code must be provided"
                 )
-            },
-            onSuccess = { res ->
-                call.respond(
-                    status = HttpStatusCode(
-                        value = res.status,
-                        description = res.description
-                    ),
-                    message = res
-                )
+            )
+        val filter = call.request.queryParameters["filter"]?.let { value ->
+            when (val option = FilterOptions.valueOf(value)) {
+                FilterOptions.All -> option
+                FilterOptions.Month -> option
+                else -> null
             }
-        )
-    }
-}
+        } ?: FilterOptions.Month
 
-fun Route.getAllOrdersBySalesman(handler: OrderHandler) {
-    post<SearchBySalesmanCodeDto> { dto ->
-        val response = handler.getAllOrdersBySalesman(dto.code)
+        val response = when (filter) {
+            FilterOptions.All -> handler.getAllOrdersByManager(manager)
+            FilterOptions.Month -> handler.getOrdersByManager(manager)
+        }
 
         call.applicationResponse(
             response = response,
@@ -153,36 +129,26 @@ fun Route.getAllOrdersBySalesman(handler: OrderHandler) {
 }
 
 fun Route.getOrdersBySalesman(handler: OrderHandler) {
-    post<SearchBySalesmanCodeDto> { dto ->
-        val response = handler.getOrdersBySalesman(dto.code)
-
-        call.applicationResponse(
-            response = response,
-            onFailure = { res ->
-                call.respond(
-                    status = HttpStatusCode(
-                        value = res.status,
-                        description = res.description
-                    ),
-                    message = res
+    get {
+        val salesman = call.request.queryParameters["salesman"]
+            ?: return@get call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = ServerResponse.badRequest<String?>(
+                    message = "Salesman code must be provided"
                 )
-            },
-            onSuccess = { res ->
-                call.respond(
-                    status = HttpStatusCode(
-                        value = res.status,
-                        description = res.description
-                    ),
-                    message = res
-                )
+            )
+        val filter = call.request.queryParameters["filter"]?.let { value ->
+            when (val option = FilterOptions.valueOf(value)) {
+                FilterOptions.All -> option
+                FilterOptions.Month -> option
+                else -> null
             }
-        )
-    }
-}
+        } ?: FilterOptions.Month
 
-fun Route.getAllOrdersByCustomer(handler: OrderHandler) {
-    post<SearchByCustomerCodeDto> { dto ->
-        val response = handler.getAllOrdersByCustomer(dto.code)
+        val response = when (filter) {
+            FilterOptions.All -> handler.getAllOrdersBySalesman(salesman)
+            FilterOptions.Month -> handler.getOrdersBySalesman(salesman)
+        }
 
         call.applicationResponse(
             response = response,
@@ -209,8 +175,26 @@ fun Route.getAllOrdersByCustomer(handler: OrderHandler) {
 }
 
 fun Route.getOrdersByCustomer(handler: OrderHandler) {
-    post<SearchByCustomerCodeDto> { dto ->
-        val response = handler.getOrdersByCustomer(dto.code)
+    get {
+        val customer = call.request.queryParameters["customer"]
+            ?: return@get call.respond(
+                status = HttpStatusCode.BadRequest,
+                message = ServerResponse.badRequest<String?>(
+                    message = "Salesman code must be provided"
+                )
+            )
+        val filter = call.request.queryParameters["filter"]?.let { value ->
+            when (val option = FilterOptions.valueOf(value)) {
+                FilterOptions.All -> option
+                FilterOptions.Month -> option
+                else -> null
+            }
+        } ?: FilterOptions.Month
+
+        val response = when (filter) {
+            FilterOptions.All -> handler.getAllOrdersByCustomer(customer)
+            FilterOptions.Month -> handler.getAllOrdersByCustomer(customer)
+        }
 
         call.applicationResponse(
             response = response,

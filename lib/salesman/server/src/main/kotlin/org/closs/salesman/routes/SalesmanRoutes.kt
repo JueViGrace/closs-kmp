@@ -47,8 +47,8 @@ fun Route.getExistingSalesmenByManager(handler: SalesmanHandler) {
 }
 
 fun Route.getExistingSalesmanByCode(handler: SalesmanHandler) {
-    get {
-        val code = call.parameters["code"]
+    get("/{salesman}") {
+        val code = call.parameters["salesman"]
             ?: return@get call.respond(
                 status = HttpStatusCode.BadRequest,
                 message = ServerResponse.badRequest<String?>(

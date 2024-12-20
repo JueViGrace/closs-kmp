@@ -10,7 +10,6 @@ import kotlin.coroutines.CoroutineContext
 
 interface OrderHandler {
     suspend fun getOrder(doc: String): APIResponse<OrderDto?>
-    suspend fun getOrderWithLines(doc: String): APIResponse<OrderDto?>
     suspend fun getAllOrdersByManager(code: String): APIResponse<List<OrderDto>>
     suspend fun getOrdersByManager(code: String): APIResponse<List<OrderDto>>
     suspend fun getAllOrdersBySalesman(code: String): APIResponse<List<OrderDto>>
@@ -26,21 +25,7 @@ class DefaultOrderHandler(
 ) : OrderHandler {
     override suspend fun getOrder(doc: String): APIResponse<OrderDto?> {
         return withContext(coroutineContext) {
-            val result = storage.getOrderWithLines(doc)
-                ?: return@withContext ServerResponse.notFound(
-                    message = "Order with id $doc was not found"
-                )
-
-            ServerResponse.ok(
-                data = result,
-                message = "Processed successfully"
-            )
-        }
-    }
-
-    override suspend fun getOrderWithLines(doc: String): APIResponse<OrderDto?> {
-        return withContext(coroutineContext) {
-            val result = storage.getOrderWithLines(doc)
+            val result = storage.getOrder(doc)
                 ?: return@withContext ServerResponse.notFound(
                     message = "Order with id $doc was not found"
                 )

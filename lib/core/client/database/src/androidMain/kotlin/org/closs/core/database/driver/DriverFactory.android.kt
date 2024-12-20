@@ -13,7 +13,7 @@ actual class DriverFactory(
         return AndroidSqliteDriver(
             schema = ClossCliDb.Schema.synchronous(),
             context = context,
-            name = "bakery.db"
+            name = "closs.db"
         )
     }
 }

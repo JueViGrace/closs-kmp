@@ -8,12 +8,11 @@ import io.ktor.server.response.respond
 import org.closs.core.database.helper.DbHelper
 import org.closs.core.types.APIResponse
 import org.closs.core.types.JwtAuthName
-import org.closs.core.types.Role
 import org.closs.core.types.ServerResponse
 import org.closs.core.util.Jwt
 import org.closs.core.validation.authentication.AuthenticationData.getUserId
 
-fun AuthenticationConfig.managerAuth(
+fun AuthenticationConfig.managerCodeAuth(
     name: JwtAuthName,
     jwt: Jwt,
     dbHelper: DbHelper
@@ -28,10 +27,14 @@ fun AuthenticationConfig.managerAuth(
                 val user = getUserId(credential, dbHelper)
                     ?: return@validateCredential null
 
-                if (user.role == Role.MANAGER) {
-                    JWTPrincipal(credential.payload)
+                val queryCode = request.queryParameters["manager"]
+                val pathCode = parameters["manager"]
+
+                when {
+                    queryCode != null && queryCode == user.code -> JWTPrincipal(credential.payload)
+                    pathCode != null && pathCode == user.code -> JWTPrincipal(credential.payload)
+                    else -> null
                 }
-                null
             }
         }
         challenge { _, _ ->
